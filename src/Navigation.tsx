@@ -12,15 +12,17 @@ export function Header({
   active: TabKey;
 }) {
   return (
-    <header className="sticky top-0 z-40 backdrop-blur bg-white/80 border-b border-slate-200/60">
+    <header className="sticky top-0 z-40 backdrop-blur bg-white/70 border-b border-brand-100/60 shadow-sm">
       <div className="mx-auto w-full max-w-3xl px-4 py-3 flex items-center justify-between">
         <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
           <span className="inline-flex items-center gap-2">
             <span
-              className="inline-block h-6 w-6 rounded-xl bg-slate-900"
+              className="inline-block h-6 w-6 rounded-xl bg-brand-600"
               aria-hidden
             />
-            <span>Outils de Chloé</span>
+            <span className="bg-gradient-to-r from-brand-700 to-brand-500 bg-clip-text text-transparent">
+              Outils de Chloé
+            </span>
           </span>
         </h1>
         <nav
@@ -78,10 +80,10 @@ export function TopLink({
   return (
     <button
       onClick={() => onClick(id)}
-      className={`px-3 py-1.5 rounded-full border transition focus:outline-none focus:ring-2 focus:ring-slate-900/20 ${
+      className={`px-3 py-1.5 rounded-full border transition focus:outline-none focus:ring-2 focus:ring-brand-300 ${
         is
-          ? 'bg-slate-900 text-white border-slate-900'
-          : 'bg-white hover:bg-slate-50'
+          ? 'bg-brand-600 text-white border-brand-600'
+          : 'bg-white hover:bg-brand-50 border-brand-100 text-slate-700'
       }`}
       aria-current={is ? 'page' : undefined}
     >
@@ -99,7 +101,6 @@ export function BottomNav({
 }) {
   const items: { id: TabKey; icon: string; label: string }[] = [
     { id: 'calculs', icon: '💊', label: 'Calculs' },
-    { id: 'scores', icon: '📈', label: 'Scores' },
     { id: 'gaz', icon: '🩸', label: 'Gaz' },
     { id: 'patient', icon: '🧪', label: 'Patient' },
     { id: 'notes', icon: '🗒️', label: 'Notes' },
@@ -110,7 +111,7 @@ export function BottomNav({
       className="fixed bottom-0 inset-x-0 z-40 sm:hidden"
       aria-label="Navigation mobile"
     >
-      <div className="mx-auto max-w-3xl bg-white/90 backdrop-blur border-t border-slate-200">
+      <div className="mx-auto max-w-3xl bg-white/90 backdrop-blur border-t border-brand-100">
         <div className="grid grid-cols-6">
           {items.map((t) => {
             const is = active === t.id;
@@ -118,8 +119,8 @@ export function BottomNav({
               <button
                 key={t.id}
                 onClick={() => onChange(t.id)}
-                className={`flex flex-col items-center justify-center py-2 text-xs focus:outline-none focus:ring-2 focus:ring-slate-900/20 ${
-                  is ? 'text-slate-900' : 'text-slate-500'
+                className={`flex flex-col items-center justify-center py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-300 ${
+                  is ? 'text-brand-600' : 'text-slate-500'
                 }`}
                 aria-current={is ? 'page' : undefined}
               >

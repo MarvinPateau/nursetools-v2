@@ -59,7 +59,7 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
   return (
     <section className="pt-6 sm:pt-8 mb-2">
       {/* Ligne de contexte (ton + date + emoji météo discret) */}
-      <div className="flex flex-wrap items-center gap-2 text-[13px] uppercase tracking-wider text-slate-500">
+      <div className="flex flex-wrap items-center gap-2 text-[13px] uppercase tracking-wider text-brand-700">
         <span className="inline-flex items-center gap-1">
           <span aria-hidden>{wxIcon}</span>
           <span>{baseTone}</span>
@@ -70,7 +70,7 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
 
       {/* Titre sobre avec gradient léger */}
       <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold leading-tight">
-        <span className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-transparent">
+        <span className="bg-gradient-to-r from-brand-700 to-brand-500 bg-clip-text text-transparent">
           {dynamicTitle}
         </span>
       </h2>
@@ -105,11 +105,11 @@ export function Tabs({
 
   const cls = (is: boolean) =>
     [
-      'group rounded-2xl border transition shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900/20',
+      'group rounded-2xl border transition shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-300',
       'flex items-center justify-center gap-2 px-3 py-2 text-sm',
       is
-        ? 'bg-slate-900 text-white border-slate-900'
-        : 'bg-white hover:bg-slate-50 text-slate-700',
+        ? 'bg-brand-600 text-white border-brand-600'
+        : 'bg-white hover:bg-brand-50 text-slate-700 border-brand-100',
     ].join(' ');
 
   return (
