@@ -1,0 +1,81 @@
+<!-- =========================================
+  SECTION A — DOCTYPE & RACINE
+  (Tu touches rarement ceci)
+========================================= -->
+<!DOCTYPE html>
+<html lang="fr">
+  <!-- =========================================
+  SECTION B — EN-TÊTE (META / TITRE / FAVICON)
+  ➜ Modifie ici le titre, la favicon, la viewport au besoin
+========================================= -->
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- ⬇️ EDIT ICI: FAVICON (SVG/PNG/ICO) -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+
+    <!-- ⬇️ EDIT ICI: VIEWPORT si spécifique PWA -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ⬇️ EDIT ICI: TITRE DE LA PAGE -->
+    <title>Boîte à outils infirmière</title>
+
+    <!-- =======================================
+    SECTION C — TAILWIND / POLICES / THEME
+    ➜ Tu peux activer/désactiver Tailwind CDN, changer la police, etc.
+  ======================================= -->
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- (facultatif) Police propre -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- ⬇️ EDIT ICI: CONFIG THEME TAILWIND (polices, couleurs, etc.) -->
+    <script>
+      // petit tweak: sets font + gris neutres par défaut si tu veux
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
+            // Exemple couleurs perso:
+            // colors: { brand: { 500: '#6B8AFB', 600: '#4F6CF0' } }
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <!-- =========================================
+  SECTION D — CORPS / RACINE APP
+  ➜ Ne garde qu’un #root, ajoute tes wrappers ici si besoin
+========================================= -->
+  <body class="min-h-screen bg-white text-slate-900">
+    <!-- Point d’ancrage React/Vite -->
+    <div id="root"></div>
+
+    <!-- =======================================
+    SECTION E — SCRIPTS D’APP
+    ➜ Import principal Vite/React. Ajoute d’autres scripts si besoin
+  ======================================= -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+<!-- =========================================
+GUIDE RAPIDE (comment utiliser les sections)
+- SECTION B: change le titre <title> et la favicon.
+- SECTION C: gère Tailwind + polices (activer/désactiver, changer la famille, config).
+- SECTION D: ajoute classes Tailwind globales au <body>, ou wrappers globaux.
+- SECTION E: remplace /src/main.tsx si ton entry point change.
+
+ASTUCE “CANVA-FRIENDLY”
+- Chaque section est isolée par de gros en-têtes pour modifier vite.
+- Si tu veux VRAIMENT des canva séparés, je peux créer 5 fichiers individuels:
+  A_root.html, B_head-meta.html, C_styles-fonts.html, D_body-root.html, E_scripts.html
+  (puis on assemble via un bundler/templating). Dis-moi et je te les génère.
+========================================= -->
