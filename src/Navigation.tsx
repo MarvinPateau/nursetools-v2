@@ -2,6 +2,7 @@
 // Rôle: en-têtes et navigation (desktop + mobile)
 
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import type { TabKey } from './App';
 
 export function Header({
@@ -117,8 +118,11 @@ export function BottomNav({
   }, []);
 
   return (
-    <nav
-      className={`fixed bottom-0 inset-x-0 z-40 sm:hidden transition-transform duration-300 ${hidden ? 'translate-y-full' : 'translate-y-0'}`}
+    <motion.nav
+      initial={false}
+      animate={{ y: hidden ? 80 : 0 }}
+      transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+      className="fixed bottom-0 inset-x-0 z-40 sm:hidden"
       aria-label="Navigation mobile"
     >
       <div className="mx-auto max-w-3xl bg-white/60 backdrop-blur-xl border-t border-white/40">
@@ -126,25 +130,26 @@ export function BottomNav({
           {items.map((t) => {
             const is = active === t.id;
             return (
-              <button
+              <motion.button
                 key={t.id}
                 onClick={() => onChange(t.id)}
-                className={`flex flex-col items-center justify-center py-2 text-xs transition-transform duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
-                  is
-                    ? 'text-brand-600 scale-110'
-                    : 'text-slate-500 hover:scale-110 active:scale-95'
+                className={`flex flex-col items-center justify-center py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
+                  is ? 'text-brand-600' : 'text-slate-500'
                 }`}
                 aria-current={is ? 'page' : undefined}
+                whileTap={{ scale: 0.9 }}
+                animate={{ scale: is ? 1.1 : 1 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 20 }}
               >
                 <span className="text-base leading-none" aria-hidden>
                   {t.icon}
                 </span>
                 <span>{t.label}</span>
-              </button>
+              </motion.button>
             );
           })}
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 }

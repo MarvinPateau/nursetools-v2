@@ -2,6 +2,7 @@
 // Header d’accueil sobre + barre d’onglets (utilise la météo passée par App)
 
 import { useMemo, useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import type { TabKey } from './App';
 
 type WeatherLite = { location: string; temp: number; condition: string } | null;
@@ -124,30 +125,35 @@ export function Tabs({
     ].join(' ');
 
   return (
-    <div
-      className={`sticky top-16 z-30 transition-transform duration-300 ${
-        hidden ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'
-      }`}
+    <motion.div
+      initial={false}
+      animate={{ y: hidden ? -80 : 0, opacity: hidden ? 0 : 1 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      className="sticky top-16 z-30"
     >
       <div className="mt-5 grid grid-cols-5 gap-2" role="tablist">
         {items.map((t) => {
           const is = active === t.id;
           return (
-            <button
+            <motion.button
               key={t.id}
               role="tab"
               aria-selected={is}
               onClick={() => onChange(t.id)}
               className={cls(is)}
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05 }}
+              animate={{ scale: is ? 1.05 : 1 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             >
               <span className="text-lg leading-none" aria-hidden>
                 {t.icon}
               </span>
               <span className="font-medium">{t.label}</span>
-            </button>
+            </motion.button>
           );
         })}
       </div>
-    </div>
+    </motion.div>
   );
 }
