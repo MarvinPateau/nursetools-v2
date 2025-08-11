@@ -1,7 +1,7 @@
 // File: src/ui/UI.tsx
 // Rôle: primitives UI réutilisables
 
-import React, { useId } from 'react';
+import { useId, type ReactNode } from 'react';
 import { toNumAllowEmpty } from '../utils';
 
 export function Card({
@@ -11,7 +11,7 @@ export function Card({
 }: {
   title: string;
   subtitle?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <section
@@ -31,7 +31,7 @@ export type FieldProps = {
   label: string;
   suffix?: string;
   value: number | string;
-  onChange: (value: any) => void;
+  onChange: (value: number | string) => void;
   type?: 'number' | 'text';
   min?: number;
   max?: number;
@@ -60,12 +60,18 @@ export function Field({
           className="w-full rounded-xl border px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-slate-900/20"
           type={type}
           inputMode={type === 'number' ? 'decimal' : undefined}
-          value={value as any}
+          value={value}
           min={min}
           max={max}
           placeholder={placeholder}
-          step={step as any}
-          onChange={(e) => onChange(toNumAllowEmpty(e.target.value))}
+          step={step}
+          onChange={(e) =>
+            onChange(
+              type === 'number'
+                ? toNumAllowEmpty(e.target.value)
+                : e.target.value
+            )
+          }
         />
         {suffix && <div className="text-sm text-slate-500">{suffix}</div>}
       </div>
@@ -125,7 +131,7 @@ export function Select({
 }: {
   label: string;
   value: string | number;
-  onChange: (value: any) => void;
+  onChange: (value: string | number) => void;
   options: SelectOption[];
 }) {
   return (
@@ -133,7 +139,7 @@ export function Select({
       <div className="text-sm text-slate-700 mb-1">{label}</div>
       <select
         className="w-full rounded-xl border px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-slate-900/20 bg-white"
-        value={value as any}
+        value={String(value)}
         onChange={(e) =>
           onChange(
             typeof value === 'number' ? Number(e.target.value) : e.target.value
@@ -172,10 +178,10 @@ export function Chip({
   children,
   tone = 'info',
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   tone?: 'ok' | 'warn' | 'danger' | 'info';
 }) {
-  const map: Record<string, string> = {
+  const map: Record<'ok' | 'warn' | 'danger' | 'info', string> = {
     ok: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     warn: 'bg-amber-50 text-amber-700 border-amber-200',
     danger: 'bg-rose-50 text-rose-700 border-rose-200',
@@ -202,10 +208,10 @@ export function Result({
   children,
   tone = 'ok',
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   tone?: 'ok' | 'warn' | 'danger' | 'info';
 }) {
-  const toneMap: Record<string, string> = {
+  const toneMap: Record<'ok' | 'warn' | 'danger' | 'info', string> = {
     ok: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     warn: 'bg-amber-50 text-amber-700 border-amber-200',
     danger: 'bg-rose-50 text-rose-700 border-rose-200',

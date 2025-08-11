@@ -1,8 +1,8 @@
 // File: src/tabs/PatientNotes.tsx
 // Rôle: onglets Patient / Notes / À propos
 
-import React, { useState } from 'react';
-import { Card, Field, Result, FieldStr } from '../ui/UI';
+import { useState } from 'react';
+import { Card, Field, Result } from '../ui/UI';
 import { round, safeDiv } from '../utils';
 
 export function PatientTab() {
@@ -55,12 +55,12 @@ function CrCl() {
       subtitle="Équation de Cockcroft–Gault (adulte)"
     >
       <div className="grid grid-cols-2 gap-3">
-        <Field label="Âge" value={age} onChange={setAge} suffix="ans" />
-        <Field label="Poids" value={poids} onChange={setPoids} suffix="kg" />
+        <Field label="Âge" value={age} onChange={(v) => setAge(Number(v))} suffix="ans" />
+        <Field label="Poids" value={poids} onChange={(v) => setPoids(Number(v))} suffix="kg" />
         <select
           className="w-full rounded-xl border px-3 py-2 text-base"
           value={sexe}
-          onChange={(e) => setSexe(e.target.value as any)}
+          onChange={(e) => setSexe(e.target.value as 'F' | 'M')}
         >
           <option value="F">Femme</option>
           <option value="M">Homme</option>
@@ -68,7 +68,7 @@ function CrCl() {
         <select
           className="w-full rounded-xl border px-3 py-2 text-base"
           value={unit}
-          onChange={(e) => setUnit(e.target.value as any)}
+          onChange={(e) => setUnit(e.target.value as 'umol' | 'mgdl')}
         >
           <option value="umol">µmol/L</option>
           <option value="mgdl">mg/dL</option>
@@ -76,7 +76,7 @@ function CrCl() {
         <Field
           label={`Créatinine sérique (${unit === 'umol' ? 'µmol/L' : 'mg/dL'})`}
           value={scr}
-          onChange={setScr}
+          onChange={(v) => setScr(Number(v))}
         />
       </div>
       <Result tone="info">
@@ -106,8 +106,8 @@ function BMI() {
   return (
     <Card title="IMC" subtitle="Indice de masse corporelle">
       <div className="grid grid-cols-2 gap-3">
-        <Field label="Taille" value={taille} onChange={setTaille} suffix="cm" />
-        <Field label="Poids" value={poids} onChange={setPoids} suffix="kg" />
+        <Field label="Taille" value={taille} onChange={(v) => setTaille(Number(v))} suffix="cm" />
+        <Field label="Poids" value={poids} onChange={(v) => setPoids(Number(v))} suffix="kg" />
       </div>
       <Result>{`IMC = ${round(bmi)} — ${interp}`}</Result>
     </Card>
@@ -115,18 +115,57 @@ function BMI() {
 }
 
 function NoteBlock() {
-  const [txt, setTxt] = useState<string>('');
+  const [input, setInput] = useState('');
+  const [notes, setNotes] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem('notes');
+      return raw ? (JSON.parse(raw) as string[]) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const saveNotes = (next: string[]) => {
+    setNotes(next);
+    localStorage.setItem('notes', JSON.stringify(next));
+  };
+
+  const addNote = () => {
+    const t = input.trim();
+    if (!t) return;
+    saveNotes([...notes, t]);
+    setInput('');
+  };
+
   return (
     <Card
       title="Bloc-notes rapide"
       subtitle="Sauvegardez localement vos repères (reste dans ce navigateur)"
     >
       <textarea
-        className="w-full min-h-[140px] rounded-xl border p-3 focus:outline-none focus:ring-2 focus:ring-slate-900/20"
-        placeholder="Ex: dilution habituelle, repères de service, check-lists..."
-        value={txt}
-        onChange={(e) => setTxt(e.target.value)}
+        className="w-full rounded-xl border p-3 focus:outline-none focus:ring-2 focus:ring-slate-900/20"
+        placeholder="Écrire une note et appuyer sur Entrée"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            addNote();
+          }
+        }}
       />
+      {notes.length > 0 && (
+        <ul className="mt-3 space-y-2">
+          {notes.map((n, i) => (
+            <li
+              key={i}
+              className="rounded-lg border px-3 py-2 text-sm bg-white/70"
+            >
+              {n}
+            </li>
+          ))}
+        </ul>
+      )}
       <div className="text-[11px] text-slate-500 mt-2">
         Astuce: <em>Ctrl/Cmd + P</em> pour imprimer la page / exporter en PDF.
       </div>

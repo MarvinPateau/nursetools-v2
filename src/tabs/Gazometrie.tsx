@@ -1,7 +1,7 @@
 // File: src/tabs/Gazometrie.tsx
 // Rôle: onglet Gazométrie + fonctions associées
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card, FieldStr, Chip } from '../ui/UI';
 import {
   round,
@@ -10,7 +10,6 @@ import {
   aAGradientCustom,
   pfRatio,
   primaryDisorder,
-  toNumAllowEmpty,
 } from '../utils';
 
 export function GazometrieTab() {
@@ -112,7 +111,9 @@ function ABGTool() {
     ].filter(Boolean);
     try {
       await navigator.clipboard.writeText(lines.join('\n'));
-    } catch {}
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -123,34 +124,34 @@ function ABGTool() {
           <FieldStr
             label="pH"
             value={pHStr}
-            onChange={setPHStr}
+            onChange={(v) => setPHStr(v)}
             placeholder="ex. 7,32"
           />
           <FieldStr
             label="PaCO₂"
             value={PaCO2Str}
-            onChange={setPaCO2Str}
+            onChange={(v) => setPaCO2Str(v)}
             suffix="mmHg"
             placeholder="ex. 52"
           />
           <FieldStr
             label="HCO₃⁻"
             value={HCO3Str}
-            onChange={setHCO3Str}
+            onChange={(v) => setHCO3Str(v)}
             suffix="mEq/L"
             placeholder="ex. 20"
           />
           <FieldStr
             label="PaO₂"
             value={PaO2Str}
-            onChange={setPaO2Str}
+            onChange={(v) => setPaO2Str(v)}
             suffix="mmHg"
             placeholder="ex. 75"
           />
           <FieldStr
             label="FiO₂"
             value={FiO2pctStr}
-            onChange={setFiO2pctStr}
+            onChange={(v) => setFiO2pctStr(v)}
             suffix="%"
             placeholder="ex. 40"
           />
@@ -163,34 +164,34 @@ function ABGTool() {
           <FieldStr
             label="Na⁺"
             value={NaStr}
-            onChange={setNaStr}
+            onChange={(v) => setNaStr(v)}
             suffix="mmol/L"
             placeholder="ex. 140"
           />
           <FieldStr
             label="Cl⁻"
             value={ClStr}
-            onChange={setClStr}
+            onChange={(v) => setClStr(v)}
             suffix="mmol/L"
             placeholder="ex. 104"
           />
           <FieldStr
             label="HCO₃⁻ (chimie)"
             value={HCO3Str}
-            onChange={setHCO3Str}
+            onChange={(v) => setHCO3Str(v)}
             suffix="mEq/L"
           />
           <FieldStr
             label="Albumine"
             value={albuminStr}
-            onChange={setAlbuminStr}
+            onChange={(v) => setAlbuminStr(v)}
             suffix="g/dL"
             placeholder="ex. 4"
           />
           <FieldStr
             label="Lactate"
             value={lactateStr}
-            onChange={setLactateStr}
+            onChange={(v) => setLactateStr(v)}
             suffix="mmol/L"
             placeholder="ex. 1.6"
           />
@@ -205,14 +206,14 @@ function ABGTool() {
           <FieldStr
             label="Pression atmosphérique"
             value={PatmStr}
-            onChange={setPatmStr}
+            onChange={(v) => setPatmStr(v)}
             suffix="mmHg"
             placeholder="760"
           />
           <FieldStr
             label="Quotient respiratoire (R)"
             value={RStr}
-            onChange={setRStr}
+            onChange={(v) => setRStr(v)}
             placeholder="0.8"
           />
         </div>
@@ -226,7 +227,7 @@ function ABGTool() {
           <Chip>AG {round(ag)}</Chip>
           <Chip>AGcorr {round(agCorr)}</Chip>
           {Number.isFinite(lactate) && (
-            <Chip tone={lactTone as any}>Lactate {round(lactate)} mmol/L</Chip>
+            <Chip tone={lactTone}>Lactate {round(lactate)} mmol/L</Chip>
           )}
         </div>
         <div className="flex gap-2">

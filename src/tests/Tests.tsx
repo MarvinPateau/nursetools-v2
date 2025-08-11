@@ -1,7 +1,6 @@
 // File: src/tests/Tests.tsx
 // Rôle: tests d'intégration rapides visibles dans l'UI
 
-import React from 'react';
 import {
   approxEqual,
   safeDiv,
