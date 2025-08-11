@@ -38,6 +38,18 @@ export function toNumAllowEmpty(v: string) {
   return Number.isFinite(n) ? n : Number.NaN;
 }
 
+export function celsiusToFahrenheit(c: number) {
+  const x = Number(c)
+  if (!Number.isFinite(x)) return 0
+  return (x * 9) / 5 + 32
+}
+
+export function fahrenheitToCelsius(f: number) {
+  const x = Number(f)
+  if (!Number.isFinite(x)) return 0
+  return ((x - 32) * 5) / 9
+}
+
 // === Gazométrie helpers ===
 export function pfRatio(PaO2: number, FiO2: number) {
   if (FiO2 <= 0) return 0;
