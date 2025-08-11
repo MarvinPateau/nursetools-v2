@@ -31,7 +31,7 @@ export type FieldProps = {
   label: string;
   suffix?: string;
   value: number | string;
-  onChange: (value: any) => void;
+  onChange: (value: number | string) => void;
   type?: 'number' | 'text';
   min?: number;
   max?: number;
@@ -60,11 +60,11 @@ export function Field({
           className="w-full rounded-xl border px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-slate-900/20"
           type={type}
           inputMode={type === 'number' ? 'decimal' : undefined}
-          value={value as any}
+          value={value}
           min={min}
           max={max}
           placeholder={placeholder}
-          step={step as any}
+          step={step}
           onChange={(e) => onChange(toNumAllowEmpty(e.target.value))}
         />
         {suffix && <div className="text-sm text-slate-500">{suffix}</div>}
@@ -125,7 +125,7 @@ export function Select({
 }: {
   label: string;
   value: string | number;
-  onChange: (value: any) => void;
+  onChange: (value: string | number) => void;
   options: SelectOption[];
 }) {
   return (
@@ -133,7 +133,7 @@ export function Select({
       <div className="text-sm text-slate-700 mb-1">{label}</div>
       <select
         className="w-full rounded-xl border px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-slate-900/20 bg-white"
-        value={value as any}
+        value={value}
         onChange={(e) =>
           onChange(
             typeof value === 'number' ? Number(e.target.value) : e.target.value

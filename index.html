@@ -27,11 +27,11 @@
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- (facultatif) Police propre -->
+    <!-- Polices Google : Inter (texte) + Space Grotesk (titres) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
 
@@ -41,9 +41,19 @@
       tailwind.config = {
         theme: {
           extend: {
-            fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
-            // Exemple couleurs perso:
-            // colors: { brand: { 500: '#6B8AFB', 600: '#4F6CF0' } }
+            fontFamily: {
+              sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+              display: ['Space Grotesk', 'Inter', 'ui-sans-serif'],
+            },
+            colors: {
+              brand: {
+                50: '#eef2ff',
+                100: '#e0e7ff',
+                500: '#6366f1',
+                600: '#4f46e5',
+                700: '#4338ca',
+              },
+            },
           },
         },
       };
@@ -54,7 +64,7 @@
   SECTION D — CORPS / RACINE APP
   ➜ Ne garde qu’un #root, ajoute tes wrappers ici si besoin
 ========================================= -->
-  <body class="min-h-screen bg-white text-slate-900">
+  <body class="min-h-screen bg-gradient-to-br from-brand-50 via-white to-cyan-50 text-slate-900 antialiased">
     <!-- Point d’ancrage React/Vite -->
     <div id="root"></div>
 

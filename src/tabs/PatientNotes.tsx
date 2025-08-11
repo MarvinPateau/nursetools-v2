@@ -2,7 +2,7 @@
 // Rôle: onglets Patient / Notes / À propos
 
 import React, { useState } from 'react';
-import { Card, Field, Result, FieldStr } from '../ui/UI';
+import { Card, Field, Result } from '../ui/UI';
 import { round, safeDiv } from '../utils';
 
 export function PatientTab() {
@@ -60,7 +60,7 @@ function CrCl() {
         <select
           className="w-full rounded-xl border px-3 py-2 text-base"
           value={sexe}
-          onChange={(e) => setSexe(e.target.value as any)}
+          onChange={(e) => setSexe(e.target.value as 'F' | 'M')}
         >
           <option value="F">Femme</option>
           <option value="M">Homme</option>
@@ -68,7 +68,7 @@ function CrCl() {
         <select
           className="w-full rounded-xl border px-3 py-2 text-base"
           value={unit}
-          onChange={(e) => setUnit(e.target.value as any)}
+          onChange={(e) => setUnit(e.target.value as 'umol' | 'mgdl')}
         >
           <option value="umol">µmol/L</option>
           <option value="mgdl">mg/dL</option>
@@ -115,18 +115,62 @@ function BMI() {
 }
 
 function NoteBlock() {
-  const [txt, setTxt] = useState<string>('');
+  const [txt, setTxt] = useState('');
+  const [notes, setNotes] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('notes') || '[]');
+    } catch {
+      return [];
+    }
+  });
+
+  function saveNotes(n: string[]) {
+    setNotes(n);
+    try {
+      localStorage.setItem('notes', JSON.stringify(n));
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  function addNote() {
+    const v = txt.trim();
+    if (!v) return;
+    saveNotes([...notes, v]);
+    setTxt('');
+  }
+
+  function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      addNote();
+    }
+  }
+
   return (
     <Card
       title="Bloc-notes rapide"
       subtitle="Sauvegardez localement vos repères (reste dans ce navigateur)"
     >
       <textarea
-        className="w-full min-h-[140px] rounded-xl border p-3 focus:outline-none focus:ring-2 focus:ring-slate-900/20"
+        className="w-full min-h-[80px] rounded-xl border p-3 focus:outline-none focus:ring-2 focus:ring-slate-900/20"
         placeholder="Ex: dilution habituelle, repères de service, check-lists..."
         value={txt}
         onChange={(e) => setTxt(e.target.value)}
+        onKeyDown={onKeyDown}
       />
+      {notes.length > 0 && (
+        <ul className="mt-4 space-y-2">
+          {notes.map((n, i) => (
+            <li
+              key={i}
+              className="rounded-xl border bg-white/70 px-3 py-2 text-sm"
+            >
+              {n}
+            </li>
+          ))}
+        </ul>
+      )}
       <div className="text-[11px] text-slate-500 mt-2">
         Astuce: <em>Ctrl/Cmd + P</em> pour imprimer la page / exporter en PDF.
       </div>
