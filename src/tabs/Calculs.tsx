@@ -36,8 +36,9 @@ function QuickPanel() {
   );
 }
 
+type DoseMode = "mgkg" | "regle3" | "dilution";
 function DoseCalculator() {
-  const [mode, setMode] = useState<"mgkg" | "regle3" | "dilution">("mgkg");
+  const [mode, setMode] = useState<DoseMode>("mgkg");
   const [poids, setPoids] = useState<number>(70);
   const [doseMgKg, setDoseMgKg] = useState<number>(1);
   const [concentration, setConcentration] = useState<number>(10);
@@ -67,14 +68,16 @@ function DoseCalculator() {
   return (
     <Card title="Calcul de dose" subtitle="Règle de trois, mg/kg, dilution">
       <div className="flex gap-2 mb-2 overflow-x-auto no-scrollbar">
-        {[
-          { id: "mgkg", label: "mg/kg" },
-          { id: "regle3", label: "Règle de trois" },
-          { id: "dilution", label: "Dilution" },
-        ].map((m) => (
+        {(
+          [
+            { id: "mgkg", label: "mg/kg" },
+            { id: "regle3", label: "Règle de trois" },
+            { id: "dilution", label: "Dilution" },
+          ] as { id: DoseMode; label: string }[]
+        ).map((m) => (
           <button
             key={m.id}
-            onClick={() => setMode(m.id as any)}
+            onClick={() => setMode(m.id)}
             className={`px-3 py-1.5 rounded-full text-sm border whitespace-nowrap ${mode === m.id ? "bg-slate-900 text-white border-slate-900" : "bg-white hover:bg-slate-50"}`}
           >
             {m.label}
