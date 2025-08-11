@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Reset minimal pour Tailwind */
 * {
   box-sizing: border-box;
