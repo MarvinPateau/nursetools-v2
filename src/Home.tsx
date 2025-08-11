@@ -3,6 +3,7 @@
 
 import { useMemo } from 'react';
 import type { TabKey } from './App';
+import { motion } from 'framer-motion';
 
 type WeatherLite = { location: string; temp: number; condition: string } | null;
 
@@ -105,10 +106,11 @@ export function Tabs({
 
   const cls = (is: boolean) =>
     [
-      'group rounded-2xl border transition shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20',
-      'flex items-center justify-center gap-2 px-3 py-2 text-sm',
+      'group relative rounded-2xl border shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20',
+      'flex items-center justify-center gap-2 px-3 py-2 text-sm transition-transform duration-150 transform-gpu',
+      'hover:scale-[1.02] active:scale-[0.98] hover:shadow-md active:shadow',
       is
-        ? 'bg-gradient-to-r from-brand-600 to-cyan-500 text-white border-transparent shadow'
+        ? 'bg-gradient-to-r from-brand-600 to-cyan-500 text-white border-transparent'
         : 'bg-white/60 hover:bg-white text-slate-700 border-white/60',
     ].join(' ');
 
@@ -129,8 +131,9 @@ export function Tabs({
             </span>
             <span className="font-medium">{t.label}</span>
             {is && (
-              <span
-                className="ml-1 inline-flex h-1.5 w-1.5 rounded-full bg-white/80"
+              <motion.span
+                layoutId="tab-underline"
+                className="absolute inset-x-2 bottom-1 h-0.5 rounded-full bg-white"
                 aria-hidden
               />
             )}

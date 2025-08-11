@@ -77,9 +77,9 @@ export function TopLink({
   return (
     <button
       onClick={() => onClick(id)}
-      className={`px-3 py-1.5 rounded-full border transition focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
+      className={`px-3 py-1.5 rounded-full border focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-transform duration-150 transform-gpu hover:scale-[1.02] active:scale-[0.98] hover:shadow-md active:shadow ${
         is
-          ? 'bg-gradient-to-r from-brand-600 to-cyan-500 text-white border-transparent shadow'
+          ? 'bg-gradient-to-r from-brand-600 to-cyan-500 text-white border-transparent'
           : 'bg-white/60 hover:bg-white text-slate-700 border-white/60'
       }`}
       aria-current={is ? 'page' : undefined}
@@ -116,7 +116,7 @@ export function BottomNav({
               <button
                 key={t.id}
                 onClick={() => onChange(t.id)}
-                className={`flex flex-col items-center justify-center py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
+                className={`flex flex-col items-center justify-center py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-transform duration-150 transform-gpu hover:scale-[1.02] active:scale-[0.98] ${
                   is ? 'text-brand-600' : 'text-slate-500'
                 }`}
                 aria-current={is ? 'page' : undefined}

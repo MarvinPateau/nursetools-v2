@@ -5,6 +5,10 @@ import { useState, useEffect } from 'react';
 import { Header, BottomNav } from './Navigation';
 import { Greeting, Tabs } from './Home';
 import { TabContent } from './TabsRouter';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeInUp } from './ui/motion/presets';
+import { transition } from './ui/motion/transition';
+import { useReducedMotion } from './ui/motion/ReducedMotion';
 
 export type TabKey = 'calculs' | 'gaz' | 'patient' | 'notes' | 'apropos';
 
@@ -15,6 +19,7 @@ export default function NurseToolkitApp() {
     temp: number;
     condition: string;
   } | null>(null);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     const API_KEY = 'd847b58a33ea424498a121309250808';
@@ -39,13 +44,27 @@ export default function NurseToolkitApp() {
     <div className="min-h-screen text-slate-900 font-sans">
       <Header onChangeTab={setTab} active={tab} />
 
-      <main className="mx-auto w-full max-w-3xl px-4 pb-28 sm:pb-24">
+      <motion.main
+        initial={{ opacity: 0, y: reduceMotion ? 0 : 12 }}
+        animate={{ opacity: 1, y: 0, transition }}
+        className="mx-auto w-full max-w-3xl px-4 pb-28 sm:pb-24"
+      >
         <Greeting weather={weather} />
         <Tabs active={tab} onChange={setTab} />
         <div className="mt-6 rounded-3xl bg-white/60 backdrop-blur-xl shadow-xl p-6 border border-white/70">
-          <TabContent active={tab} />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={tab}
+              variants={fadeInUp}
+              initial="hidden"
+              animate="enter"
+              exit="exit"
+            >
+              <TabContent active={tab} />
+            </motion.div>
+          </AnimatePresence>
         </div>
-      </main>
+      </motion.main>
 
       <BottomNav active={tab} onChange={setTab} />
 

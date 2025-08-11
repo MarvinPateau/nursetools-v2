@@ -3,6 +3,8 @@
 
 import React from 'react';
 import { toNumAllowEmpty } from '../utils';
+import { motion } from 'framer-motion';
+import { scaleIn } from './motion/presets';
 
 export function Card({
   title,
@@ -14,7 +16,11 @@ export function Card({
     children: React.ReactNode;
 }) {
   return (
-    <section
+    <motion.section
+      variants={scaleIn}
+      initial="hidden"
+      animate="enter"
+      exit="exit"
       className="rounded-3xl border bg-white p-5 shadow-sm hover:shadow-md transition-shadow"
       aria-label={title}
     >
@@ -23,7 +29,7 @@ export function Card({
         {subtitle && <p className="text-sm text-slate-600 mt-1">{subtitle}</p>}
       </div>
       {children}
-    </section>
+    </motion.section>
   );
 }
 
