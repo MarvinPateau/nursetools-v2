@@ -1,7 +1,7 @@
 // File: src/tabs/PatientNotes.tsx
 // Rôle: onglets Patient / Notes / À propos
 
-import React from 'react';
+import { useState } from 'react';
 import { Card, Field, Result } from '../ui/UI';
 import { round, safeDiv } from '../utils';
 
@@ -39,11 +39,11 @@ export function AProposTab() {
 }
 
 function CrCl() {
-  const [age, setAge] = React.useState<number>(30);
-  const [poids, setPoids] = React.useState<number>(60);
-  const [sexe, setSexe] = React.useState<'F' | 'M'>('F');
-  const [unit, setUnit] = React.useState<'umol' | 'mgdl'>('umol');
-  const [scr, setScr] = React.useState<number>(70);
+  const [age, setAge] = useState<number>(30);
+  const [poids, setPoids] = useState<number>(60);
+  const [sexe, setSexe] = useState<'F' | 'M'>('F');
+  const [unit, setUnit] = useState<'umol' | 'mgdl'>('umol');
+  const [scr, setScr] = useState<number>(70);
 
   const mgdl = unit === 'umol' ? safeDiv(Number(scr), 88.4) : Number(scr);
   const factor = sexe === 'F' ? 0.85 : 1;
@@ -100,8 +100,8 @@ function CrCl() {
 }
 
 function BMI() {
-  const [taille, setTaille] = React.useState<number>(170);
-  const [poids, setPoids] = React.useState<number>(60);
+  const [taille, setTaille] = useState<number>(170);
+  const [poids, setPoids] = useState<number>(60);
   const m = Number(taille) / 100;
   const bmi = safeDiv(Number(poids), m * m);
   const interp =
@@ -135,8 +135,8 @@ function BMI() {
 }
 
 function NoteBlock() {
-  const [input, setInput] = React.useState('');
-  const [notes, setNotes] = React.useState<string[]>(() => {
+  const [input, setInput] = useState('');
+  const [notes, setNotes] = useState<string[]>(() => {
     try {
       const raw = localStorage.getItem('notes');
       return raw ? (JSON.parse(raw) as string[]) : [];
