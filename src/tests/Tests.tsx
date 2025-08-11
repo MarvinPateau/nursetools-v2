@@ -8,6 +8,8 @@ import {
   aAGradientCustom,
   correctedAnionGap,
   round,
+  celsiusToFahrenheit,
+  fahrenheitToCelsius,
 } from '../utils';
 
 export function Tests() {
@@ -60,6 +62,18 @@ export function Tests() {
       expected: 21,
       actual: correctedAnionGap(16, 2.0),
       pass: approxEqual(correctedAnionGap(16, 2.0), 21, 0.01),
+    },
+    {
+      name: 'Celsius vers Fahrenheit 25°C',
+      expected: 77,
+      actual: celsiusToFahrenheit(25),
+      pass: approxEqual(celsiusToFahrenheit(25), 77, 0.01),
+    },
+    {
+      name: 'Fahrenheit vers Celsius 77°F',
+      expected: 25,
+      actual: fahrenheitToCelsius(77),
+      pass: approxEqual(fahrenheitToCelsius(77), 25, 0.01),
     },
   ];
 
