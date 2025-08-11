@@ -1,7 +1,7 @@
 // File: src/tabs/Calculs.tsx
 // Rôle: outils de calculs
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Card, Field, Result } from "../ui/UI";
 import { safeDiv, round, toNum } from "../utils";
 
@@ -27,17 +27,23 @@ function QuickPanel() {
     <div className="rounded-3xl border bg-white p-4">
       <div className="text-sm font-medium mb-2">Raccourci: dose mg/kg → mL</div>
       <div className="grid grid-cols-3 gap-2 mb-3">
-        <MiniField label="Poids" value={w} suffix="kg" onChange={setW} />
-        <MiniField label="Dose" value={d} suffix="mg/kg" onChange={setD} />
-        <MiniField label="Concentration" value={c} suffix="mg/mL" onChange={setC} />
+        <MiniField label="Poids" value={w} suffix="kg" onChange={(v) => setW(Number(v))} />
+        <MiniField label="Dose" value={d} suffix="mg/kg" onChange={(v) => setD(Number(v))} />
+        <MiniField
+          label="Concentration"
+          value={c}
+          suffix="mg/mL"
+          onChange={(v) => setC(Number(v))}
+        />
       </div>
       <div className="rounded-xl border bg-slate-50 text-slate-800 px-3 py-2 text-sm">≈ {round(ml)} mL</div>
     </div>
   );
 }
 
+type DoseMode = "mgkg" | "regle3" | "dilution";
 function DoseCalculator() {
-  const [mode, setMode] = useState<"mgkg" | "regle3" | "dilution">("mgkg");
+  const [mode, setMode] = useState<DoseMode>("mgkg");
   const [poids, setPoids] = useState<number>(70);
   const [doseMgKg, setDoseMgKg] = useState<number>(1);
   const [concentration, setConcentration] = useState<number>(10);
@@ -67,14 +73,16 @@ function DoseCalculator() {
   return (
     <Card title="Calcul de dose" subtitle="Règle de trois, mg/kg, dilution">
       <div className="flex gap-2 mb-2 overflow-x-auto no-scrollbar">
-        {[
-          { id: "mgkg", label: "mg/kg" },
-          { id: "regle3", label: "Règle de trois" },
-          { id: "dilution", label: "Dilution" },
-        ].map((m) => (
+        {(
+          [
+            { id: "mgkg", label: "mg/kg" },
+            { id: "regle3", label: "Règle de trois" },
+            { id: "dilution", label: "Dilution" },
+          ] as { id: DoseMode; label: string }[]
+        ).map((m) => (
           <button
             key={m.id}
-            onClick={() => setMode(m.id as any)}
+            onClick={() => setMode(m.id)}
             className={`px-3 py-1.5 rounded-full text-sm border whitespace-nowrap ${mode === m.id ? "bg-slate-900 text-white border-slate-900" : "bg-white hover:bg-slate-50"}`}
           >
             {m.label}
@@ -84,26 +92,72 @@ function DoseCalculator() {
 
       {mode === "mgkg" && (
         <div>
-          <Field label="Poids du patient" value={poids} onChange={setPoids} suffix="kg" step="0.1" />
-          <Field label="Dose prescrite" value={doseMgKg} onChange={setDoseMgKg} suffix="mg/kg" step="0.1" />
-          <Field label="Concentration disponible" value={concentration} onChange={setConcentration} suffix="mg/mL" step="0.1" />
+          <Field
+            label="Poids du patient"
+            value={poids}
+            onChange={(v) => setPoids(Number(v))}
+            suffix="kg"
+            step="0.1"
+          />
+          <Field
+            label="Dose prescrite"
+            value={doseMgKg}
+            onChange={(v) => setDoseMgKg(Number(v))}
+            suffix="mg/kg"
+            step="0.1"
+          />
+          <Field
+            label="Concentration disponible"
+            value={concentration}
+            onChange={(v) => setConcentration(Number(v))}
+            suffix="mg/mL"
+            step="0.1"
+          />
           <Result>{res.text}</Result>
         </div>
       )}
 
       {mode === "regle3" && (
         <div>
-          <Field label="Dose voulue" value={voulu} onChange={setVoulu} suffix="mg" step="0.1" />
-          <Field label="Concentration (ce que vous avez)" value={dispo} onChange={setDispo} suffix="mg/mL" step="0.1" />
+          <Field
+            label="Dose voulue"
+            value={voulu}
+            onChange={(v) => setVoulu(Number(v))}
+            suffix="mg"
+            step="0.1"
+          />
+          <Field
+            label="Concentration (ce que vous avez)"
+            value={dispo}
+            onChange={(v) => setDispo(Number(v))}
+            suffix="mg/mL"
+            step="0.1"
+          />
           <Result>{res.text}</Result>
         </div>
       )}
 
       {mode === "dilution" && (
         <div>
-          <Field label="Contenu ampoule" value={contenuAmpoule} onChange={setContenuAmpoule} suffix="mg" />
-          <Field label="Volume ampoule" value={volumeAmpoule} onChange={setVolumeAmpoule} suffix="mL" step="0.1" />
-          <Field label="Dose souhaitée" value={doseSouhaitee} onChange={setDoseSouhaitee} suffix="mg" />
+          <Field
+            label="Contenu ampoule"
+            value={contenuAmpoule}
+            onChange={(v) => setContenuAmpoule(Number(v))}
+            suffix="mg"
+          />
+          <Field
+            label="Volume ampoule"
+            value={volumeAmpoule}
+            onChange={(v) => setVolumeAmpoule(Number(v))}
+            suffix="mL"
+            step="0.1"
+          />
+          <Field
+            label="Dose souhaitée"
+            value={doseSouhaitee}
+            onChange={(v) => setDoseSouhaitee(Number(v))}
+            suffix="mg"
+          />
           <Result tone="info">{res.text}</Result>
         </div>
       )}
@@ -126,10 +180,25 @@ function InfusionRate() {
 
   return (
     <Card title="Débit d'infusion" subtitle="Calcul du mL/h">
-      <Field label="Volume à perfuser" value={volume} onChange={setVolume} suffix="mL" />
+      <Field
+        label="Volume à perfuser"
+        value={volume}
+        onChange={(v) => setVolume(Number(v))}
+        suffix="mL"
+      />
       <div className="grid grid-cols-2 gap-3">
-        <Field label="Heures" value={heures} onChange={setHeures} suffix="h" />
-        <Field label="Minutes" value={minutes} onChange={setMinutes} suffix="min" />
+        <Field
+          label="Heures"
+          value={heures}
+          onChange={(v) => setHeures(Number(v))}
+          suffix="h"
+        />
+        <Field
+          label="Minutes"
+          value={minutes}
+          onChange={(v) => setMinutes(Number(v))}
+          suffix="min"
+        />
       </div>
       <Result>{`${round(mlh)} mL/h`}</Result>
     </Card>
@@ -145,9 +214,24 @@ function DripRate() {
 
   return (
     <Card title="Gouttes par minute" subtitle="(Volume × facteur de chute) ÷ temps">
-      <Field label="Volume" value={volume} onChange={setVolume} suffix="mL" />
-      <Field label="Temps" value={minutes} onChange={setMinutes} suffix="min" />
-      <Field label="Facteur de chute" value={df} onChange={setDf} suffix="gtt/mL" />
+      <Field
+        label="Volume"
+        value={volume}
+        onChange={(v) => setVolume(Number(v))}
+        suffix="mL"
+      />
+      <Field
+        label="Temps"
+        value={minutes}
+        onChange={(v) => setMinutes(Number(v))}
+        suffix="min"
+      />
+      <Field
+        label="Facteur de chute"
+        value={df}
+        onChange={(v) => setDf(Number(v))}
+        suffix="gtt/mL"
+      />
       <Result>{`${Math.round(gtt)} gtt/min`}</Result>
     </Card>
   );

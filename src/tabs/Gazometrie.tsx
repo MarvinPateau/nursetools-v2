@@ -1,7 +1,7 @@
 // File: src/tabs/Gazometrie.tsx
 // Rôle: onglet Gazométrie + fonctions associées
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card, FieldStr, Chip } from '../ui/UI';
 import {
   round,
@@ -10,7 +10,6 @@ import {
   aAGradientCustom,
   pfRatio,
   primaryDisorder,
-  toNumAllowEmpty,
 } from '../utils';
 
 export function GazometrieTab() {
@@ -112,7 +111,9 @@ function ABGTool() {
     ].filter(Boolean);
     try {
       await navigator.clipboard.writeText(lines.join('\n'));
-    } catch {}
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -226,7 +227,7 @@ function ABGTool() {
           <Chip>AG {round(ag)}</Chip>
           <Chip>AGcorr {round(agCorr)}</Chip>
           {Number.isFinite(lactate) && (
-            <Chip tone={lactTone as any}>Lactate {round(lactate)} mmol/L</Chip>
+            <Chip tone={lactTone}>Lactate {round(lactate)} mmol/L</Chip>
           )}
         </div>
         <div className="flex gap-2">
