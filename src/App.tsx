@@ -2,9 +2,13 @@
 // Rôle: point d'entrée visuel, gestion d'état d'onglet, layout général (design modernisé et épuré)
 
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Header, BottomNav } from './Navigation';
 import { Greeting, Tabs } from './Home';
 import { TabContent } from './TabsRouter';
+import { fadeInUp } from './ui/motion/presets';
+import { transition } from './ui/motion/transition';
+import { useReducedMotion } from './ui/motion/ReducedMotion';
 
 export type TabKey = 'calculs' | 'gaz' | 'patient' | 'notes' | 'apropos';
 
@@ -15,6 +19,8 @@ export default function NurseToolkitApp() {
     temp: number;
     condition: string;
   } | null>(null);
+
+  const prefersReduced = useReducedMotion();
 
   useEffect(() => {
     const API_KEY = 'd847b58a33ea424498a121309250808';
@@ -39,13 +45,29 @@ export default function NurseToolkitApp() {
     <div className="min-h-screen text-slate-900 font-sans">
       <Header onChangeTab={setTab} active={tab} />
 
-      <main className="mx-auto w-full max-w-3xl px-4 pb-28 sm:pb-24">
+      <motion.main
+        className="mx-auto w-full max-w-3xl px-4 pb-28 sm:pb-24"
+        initial="hidden"
+        animate="visible"
+        variants={prefersReduced ? undefined : fadeInUp}
+        transition={transition}
+      >
         <Greeting weather={weather} />
         <Tabs active={tab} onChange={setTab} />
-        <div className="mt-6 rounded-3xl bg-white/60 backdrop-blur-xl shadow-xl p-6 border border-white/70">
-          <TabContent active={tab} />
-        </div>
-      </main>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={tab}
+            className="mt-6 rounded-3xl bg-white/60 backdrop-blur-xl shadow-xl p-6 border border-white/70"
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={prefersReduced ? undefined : fadeInUp}
+            transition={transition}
+          >
+            <TabContent active={tab} />
+          </motion.div>
+        </AnimatePresence>
+      </motion.main>
 
       <BottomNav active={tab} onChange={setTab} />
 
