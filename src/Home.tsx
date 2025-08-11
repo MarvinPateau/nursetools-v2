@@ -7,7 +7,6 @@ import type { TabKey } from './App';
 type WeatherLite = { location: string; temp: number; condition: string } | null;
 
 export function Greeting({ weather }: { weather: WeatherLite }) {
-  // Heure → ton général
   const now = new Date();
   const h = now.getHours();
   const baseTone =
@@ -21,8 +20,8 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
       ? 'Bonsoir'
       : 'Douce nuit';
 
-  // Cond météo → emoji & titre discrets (si météo dispo)
   const cond = (weather?.condition || '').toLowerCase();
+
   const wxIcon = cond.includes('pluie')
     ? '🌧️'
     : cond.includes('neige')
@@ -39,16 +38,28 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
     ? '🌙'
     : '🌤️';
 
-  const dynamicTitle = useMemo(() => {
+  const dynamicMessage = useMemo(() => {
+    const temp = weather?.temp ?? null;
+    if (h < 6 || h >= 21) return '🌙 Douce nuit, prends soin de toi.';
+    if (cond.includes('neige'))
+      return '❄️ Temps parfait pour un chocolat chaud sous un plaid.';
     if (cond.includes('pluie'))
-      return 'Chloé, prends le temps — tout en douceur.';
-    if (cond.includes('neige')) return 'Chloé, au chaud et efficace.';
-    if (cond.includes('orage')) return 'Chloé, calme dans la tempête.';
-    if (cond.includes('nuage')) return 'Chloé, l’essentiel, sans nuages.';
+      return '🌧 Un peu de pluie dehors, mais du soleil dans ton cœur.';
+    if (cond.includes('orage'))
+      return '⛈ Courage, l’orage ne dure jamais longtemps.';
+    if (cond.includes('nuage'))
+      return '🌤 Un temps doux pour adoucir la garde.';
+    if (cond.includes('brouillard'))
+      return '🌫 Un peu de brouillard mais esprit clair.';
     if (cond.includes('soleil') || cond.includes('ensoleillé'))
-      return 'Chloé, clair et rapide comme un rayon.';
-    return 'Chloé, tout ce qu’il te faut, dans ta poche.';
-  }, [cond]);
+      return '☀️ Un grand soleil pour éclairer ta journée, Chloé !';
+    if (temp !== null) {
+      if (temp <= 0) return '🥶 Il fait très froid, couvre-toi bien.';
+      if (temp < 10) return '🧥 Il fait frais, n’oublie pas ta veste.';
+      if (temp > 30) return '🔥 Canicule en vue, hydrate-toi !';
+    }
+    return '🌥 Prends soin de toi et bon courage.';
+  }, [cond, h, weather?.temp]);
 
   const dateStr = now.toLocaleDateString('fr-FR', {
     weekday: 'long',
@@ -58,7 +69,6 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
 
   return (
     <section className="pt-6 sm:pt-8 mb-2">
-      {/* Ligne de contexte (ton + date + emoji météo discret) */}
       <div className="flex flex-wrap items-center gap-2 text-[13px] uppercase tracking-wider text-slate-500">
         <span className="inline-flex items-center gap-1">
           <span aria-hidden>{wxIcon}</span>
@@ -68,22 +78,18 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
         <span className="capitalize">{dateStr}</span>
       </div>
 
-      {/* Titre sobre avec gradient léger */}
       <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold leading-tight font-display">
         <span className="bg-gradient-to-r from-brand-700 via-brand-600 to-cyan-600 bg-clip-text text-transparent">
-          {dynamicTitle}
+          {dynamicMessage}
         </span>
       </h2>
 
-      {/* Sous-texte concis */}
       <p className="mt-2 text-slate-600">
         Calculs rapides, repères utiles et outils patients.
         <span className="hidden sm:inline">
-          {' '}
-          Optimisé pour mobile, hors stress.
+          {' '}Optimisé pour mobile, hors stress.
         </span>
       </p>
-      {/* NB: la ligne météo détaillée est affichée dans App, juste sous le Greeting. */}
     </section>
   );
 }
