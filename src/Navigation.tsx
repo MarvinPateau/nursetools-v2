@@ -99,7 +99,6 @@ export function BottomNav({
 }) {
   const items: { id: TabKey; icon: string; label: string }[] = [
     { id: 'calculs', icon: '💊', label: 'Calculs' },
-    { id: 'scores', icon: '📈', label: 'Scores' },
     { id: 'gaz', icon: '🩸', label: 'Gaz' },
     { id: 'patient', icon: '🧪', label: 'Patient' },
     { id: 'notes', icon: '🗒️', label: 'Notes' },
@@ -111,7 +110,7 @@ export function BottomNav({
       aria-label="Navigation mobile"
     >
       <div className="mx-auto max-w-3xl bg-white/60 backdrop-blur-xl border-t border-white/40">
-        <div className="grid grid-cols-6">
+        <div className="grid grid-cols-5">
           {items.map((t) => {
             const is = active === t.id;
             return (
