@@ -1,7 +1,7 @@
 // File: src/ui/UI.tsx
 // Rôle: primitives UI réutilisables
 
-import { useId, type ReactNode } from 'react';
+import React from 'react';
 import { toNumAllowEmpty } from '../utils';
 
 export function Card({
@@ -11,7 +11,7 @@ export function Card({
 }: {
   title: string;
   subtitle?: string;
-    children: ReactNode;
+    children: React.ReactNode;
 }) {
   return (
     <section
@@ -50,7 +50,7 @@ export function Field({
   step,
   placeholder,
 }: FieldProps) {
-  const id = useId();
+  const id = React.useId();
   return (
     <label className="block mb-3" htmlFor={id}>
       <div className="text-sm text-slate-700 mb-1">{label}</div>
@@ -92,7 +92,7 @@ export function FieldStr({
   onChange: (v: string) => void;
   placeholder?: string;
 }) {
-  const id = useId();
+  const id = React.useId();
   return (
     <label className="block mb-3" htmlFor={id}>
       <div className="text-sm text-slate-700 mb-1">{label}</div>
@@ -178,7 +178,7 @@ export function Chip({
   children,
   tone = 'info',
 }: {
-  children: ReactNode;
+  children: React.ReactNode;
   tone?: 'ok' | 'warn' | 'danger' | 'info';
 }) {
   const map: Record<'ok' | 'warn' | 'danger' | 'info', string> = {
@@ -208,7 +208,7 @@ export function Result({
   children,
   tone = 'ok',
 }: {
-  children: ReactNode;
+  children: React.ReactNode;
   tone?: 'ok' | 'warn' | 'danger' | 'info';
 }) {
   const toneMap: Record<'ok' | 'warn' | 'danger' | 'info', string> = {
