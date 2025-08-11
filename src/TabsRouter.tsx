@@ -1,7 +1,6 @@
 // File: src/TabsRouter.tsx
 // Rôle: routeur d'onglets -> rend le bon bloc selon l'onglet actif
 
-import React from 'react';
 import type { TabKey } from './App';
 import { CalculsTab } from './tabs/Calculs';
 import { GazometrieTab } from './tabs/Gazometrie';

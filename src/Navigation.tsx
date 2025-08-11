@@ -1,7 +1,7 @@
 // File: src/Navigation.tsx
 // Rôle: en-têtes et navigation (desktop + mobile)
 
-import React from 'react';
+import { useEffect, useState } from 'react';
 import type { TabKey } from './App';
 
 export function Header({
@@ -12,12 +12,12 @@ export function Header({
   active: TabKey;
 }) {
   return (
-    <header className="sticky top-0 z-40 backdrop-blur bg-white/80 border-b border-slate-200/60">
+    <header className="sticky top-0 z-40 backdrop-blur-xl bg-white/60 border-b border-white/40">
       <div className="mx-auto w-full max-w-3xl px-4 py-3 flex items-center justify-between">
-        <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
+        <h1 className="text-xl sm:text-2xl font-semibold tracking-tight font-display">
           <span className="inline-flex items-center gap-2">
             <span
-              className="inline-block h-6 w-6 rounded-xl bg-slate-900"
+              className="inline-block h-6 w-6 rounded-xl bg-gradient-to-br from-brand-500 to-cyan-500"
               aria-hidden
             />
             <span>Outils de Chloé</span>
@@ -78,10 +78,10 @@ export function TopLink({
   return (
     <button
       onClick={() => onClick(id)}
-      className={`px-3 py-1.5 rounded-full border transition focus:outline-none focus:ring-2 focus:ring-slate-900/20 ${
+      className={`px-3 py-1.5 rounded-full border transition focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
         is
-          ? 'bg-slate-900 text-white border-slate-900'
-          : 'bg-white hover:bg-slate-50'
+          ? 'bg-gradient-to-r from-brand-600 to-cyan-500 text-white border-transparent shadow'
+          : 'bg-white/60 hover:bg-white text-slate-700 border-white/60'
       }`}
       aria-current={is ? 'page' : undefined}
     >
@@ -99,27 +99,40 @@ export function BottomNav({
 }) {
   const items: { id: TabKey; icon: string; label: string }[] = [
     { id: 'calculs', icon: '💊', label: 'Calculs' },
-    { id: 'scores', icon: '📈', label: 'Scores' },
     { id: 'gaz', icon: '🩸', label: 'Gaz' },
     { id: 'patient', icon: '🧪', label: 'Patient' },
     { id: 'notes', icon: '🗒️', label: 'Notes' },
     { id: 'apropos', icon: 'ℹ️', label: 'Infos' },
   ];
+  const [hidden, setHidden] = useState(false);
+  useEffect(() => {
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setHidden(y > last && y > 40);
+      last = y;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
     <nav
-      className="fixed bottom-0 inset-x-0 z-40 sm:hidden"
+      className={`fixed bottom-0 inset-x-0 z-40 sm:hidden transition-transform duration-300 ${hidden ? 'translate-y-full' : 'translate-y-0'}`}
       aria-label="Navigation mobile"
     >
-      <div className="mx-auto max-w-3xl bg-white/90 backdrop-blur border-t border-slate-200">
-        <div className="grid grid-cols-6">
+      <div className="mx-auto max-w-3xl bg-white/60 backdrop-blur-xl border-t border-white/40">
+        <div className="grid grid-cols-5">
           {items.map((t) => {
             const is = active === t.id;
             return (
               <button
                 key={t.id}
                 onClick={() => onChange(t.id)}
-                className={`flex flex-col items-center justify-center py-2 text-xs focus:outline-none focus:ring-2 focus:ring-slate-900/20 ${
-                  is ? 'text-slate-900' : 'text-slate-500'
+                className={`flex flex-col items-center justify-center py-2 text-xs transition-transform duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
+                  is
+                    ? 'text-brand-600 scale-110'
+                    : 'text-slate-500 hover:scale-110 active:scale-95'
                 }`}
                 aria-current={is ? 'page' : undefined}
               >

@@ -1,7 +1,7 @@
 // File: src/Home.tsx
 // Header d’accueil sobre + barre d’onglets (utilise la météo passée par App)
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import type { TabKey } from './App';
 
 type WeatherLite = { location: string; temp: number; condition: string } | null;
@@ -69,8 +69,8 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
       </div>
 
       {/* Titre sobre avec gradient léger */}
-      <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold leading-tight">
-        <span className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-transparent">
+      <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold leading-tight font-display">
+        <span className="bg-gradient-to-r from-brand-700 via-brand-600 to-cyan-600 bg-clip-text text-transparent">
           {dynamicTitle}
         </span>
       </h2>
@@ -105,38 +105,46 @@ export function Tabs({
 
   const cls = (is: boolean) =>
     [
-      'group rounded-2xl border transition shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900/20',
-      'flex items-center justify-center gap-2 px-3 py-2 text-sm',
+      'group rounded-2xl border shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20',
+      'flex items-center justify-center gap-2 px-3 py-2 text-sm flex-shrink-0 snap-center transform transition-all duration-200 hover:scale-105 active:scale-95',
       is
-        ? 'bg-slate-900 text-white border-slate-900'
-        : 'bg-white hover:bg-slate-50 text-slate-700',
+        ? 'bg-gradient-to-r from-brand-600 to-cyan-500 text-white border-transparent shadow'
+        : 'bg-white/60 hover:bg-white text-slate-700 border-white/60',
     ].join(' ');
 
   return (
-    <div className="mt-5 grid grid-cols-2 sm:grid-cols-5 gap-2" role="tablist">
-      {items.map((t) => {
-        const is = active === t.id;
-        return (
-          <button
-            key={t.id}
-            role="tab"
-            aria-selected={is}
-            onClick={() => onChange(t.id)}
-            className={cls(is)}
-          >
-            <span className="text-base leading-none" aria-hidden>
-              {t.icon}
-            </span>
-            <span className="font-medium">{t.label}</span>
-            {is && (
-              <span
-                className="ml-1 inline-flex h-1.5 w-1.5 rounded-full bg-white/80"
-                aria-hidden
-              />
-            )}
-          </button>
-        );
-      })}
-    </div>
+    <>
+      <div
+        className="mt-5 flex gap-2 overflow-x-auto pb-2 no-scrollbar snap-x snap-mandatory sm:grid sm:grid-cols-5"
+        role="tablist"
+      >
+        {items.map((t) => {
+          const is = active === t.id;
+          return (
+            <button
+              key={t.id}
+              role="tab"
+              aria-selected={is}
+              onClick={() => onChange(t.id)}
+              className={cls(is)}
+            >
+              <span className="text-base leading-none" aria-hidden>
+                {t.icon}
+              </span>
+              <span className="font-medium">{t.label}</span>
+              {is && (
+                <span
+                  className="ml-1 inline-flex h-1.5 w-1.5 rounded-full bg-white/80"
+                  aria-hidden
+                />
+              )}
+            </button>
+          );
+        })}
+      </div>
+      <p className="mt-3 text-center text-xs text-slate-500 sm:hidden">
+        Tu gères, Chloé ! ✨
+      </p>
+    </>
   );
 }
