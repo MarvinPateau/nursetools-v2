@@ -1,7 +1,7 @@
 // File: src/App.tsx
 // Rôle: point d'entrée visuel, gestion d'état d'onglet, layout général (design modernisé et épuré)
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Header, BottomNav } from './Navigation';
 import { Greeting, Tabs } from './Home';
 import { TabContent } from './TabsRouter';

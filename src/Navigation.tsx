@@ -1,7 +1,6 @@
 // File: src/Navigation.tsx
 // Rôle: en-têtes et navigation (desktop + mobile)
 
-import React from 'react';
 import type { TabKey } from './App';
 
 export function Header({

@@ -1,7 +1,8 @@
 // File: src/tabs/PatientNotes.tsx
 // Rôle: onglets Patient / Notes / À propos
 
-import React, { useState } from 'react';
+import { useState } from 'react';
+
 import { Card, Field, Result } from '../ui/UI';
 import { round, safeDiv } from '../utils';
 
@@ -55,8 +56,18 @@ function CrCl() {
       subtitle="Équation de Cockcroft–Gault (adulte)"
     >
       <div className="grid grid-cols-2 gap-3">
-        <Field label="Âge" value={age} onChange={setAge} suffix="ans" />
-        <Field label="Poids" value={poids} onChange={setPoids} suffix="kg" />
+        <Field
+          label="Âge"
+          value={age}
+          onChange={(v) => setAge(Number(v))}
+          suffix="ans"
+        />
+        <Field
+          label="Poids"
+          value={poids}
+          onChange={(v) => setPoids(Number(v))}
+          suffix="kg"
+        />
         <select
           className="w-full rounded-xl border px-3 py-2 text-base"
           value={sexe}
@@ -76,7 +87,7 @@ function CrCl() {
         <Field
           label={`Créatinine sérique (${unit === 'umol' ? 'µmol/L' : 'mg/dL'})`}
           value={scr}
-          onChange={setScr}
+          onChange={(v) => setScr(Number(v))}
         />
       </div>
       <Result tone="info">
@@ -106,8 +117,18 @@ function BMI() {
   return (
     <Card title="IMC" subtitle="Indice de masse corporelle">
       <div className="grid grid-cols-2 gap-3">
-        <Field label="Taille" value={taille} onChange={setTaille} suffix="cm" />
-        <Field label="Poids" value={poids} onChange={setPoids} suffix="kg" />
+        <Field
+          label="Taille"
+          value={taille}
+          onChange={(v) => setTaille(Number(v))}
+          suffix="cm"
+        />
+        <Field
+          label="Poids"
+          value={poids}
+          onChange={(v) => setPoids(Number(v))}
+          suffix="kg"
+        />
       </div>
       <Result>{`IMC = ${round(bmi)} — ${interp}`}</Result>
     </Card>

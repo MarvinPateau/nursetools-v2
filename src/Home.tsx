@@ -1,7 +1,7 @@
 // File: src/Home.tsx
 // Header d’accueil sobre + barre d’onglets (utilise la météo passée par App)
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import type { TabKey } from './App';
 
 type WeatherLite = { location: string; temp: number; condition: string } | null;

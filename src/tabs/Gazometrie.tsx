@@ -1,7 +1,7 @@
 // File: src/tabs/Gazometrie.tsx
 // Rôle: onglet Gazométrie + fonctions associées
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card, FieldStr, Chip } from '../ui/UI';
 import {
   round,
