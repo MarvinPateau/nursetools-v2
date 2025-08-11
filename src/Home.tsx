@@ -69,8 +69,8 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
       </div>
 
       {/* Titre sobre avec gradient léger */}
-      <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold leading-tight">
-        <span className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-transparent">
+      <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold leading-tight font-display">
+        <span className="bg-gradient-to-r from-brand-700 via-brand-600 to-cyan-600 bg-clip-text text-transparent">
           {dynamicTitle}
         </span>
       </h2>
@@ -105,11 +105,11 @@ export function Tabs({
 
   const cls = (is: boolean) =>
     [
-      'group rounded-2xl border transition shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900/20',
+      'group rounded-2xl border transition shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20',
       'flex items-center justify-center gap-2 px-3 py-2 text-sm',
       is
-        ? 'bg-slate-900 text-white border-slate-900'
-        : 'bg-white hover:bg-slate-50 text-slate-700',
+        ? 'bg-gradient-to-r from-brand-600 to-cyan-500 text-white border-transparent shadow'
+        : 'bg-white/60 hover:bg-white text-slate-700 border-white/60',
     ].join(' ');
 
   return (
