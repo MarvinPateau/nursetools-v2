@@ -92,11 +92,11 @@ function ABGTool() {
     [pH, PaCO2, HCO3]
   );
 
-  const pfTone: 'ok' | 'warn' | 'danger' | 'info' =
-    pf >= 300 ? 'ok' : pf >= 200 ? 'info' : pf >= 100 ? 'warn' : 'danger';
-  const lactTone: 'ok' | 'warn' | 'danger' =
+  const pfTone: 'success' | 'warn' | 'danger' | 'info' =
+    pf >= 300 ? 'success' : pf >= 200 ? 'info' : pf >= 100 ? 'warn' : 'danger';
+  const lactTone: 'success' | 'warn' | 'danger' =
     Number.isFinite(lactate) && lactate <= 2
-      ? 'ok'
+      ? 'success'
       : Number.isFinite(lactate) && lactate <= 4
       ? 'warn'
       : 'danger';
@@ -118,8 +118,8 @@ function ABGTool() {
 
   return (
     <Card title="Gazométrie (ABG)" subtitle="Aide à l'interprétation rapide">
-      <fieldset className="rounded-2xl border p-3">
-        <legend className="px-2 text-xs text-slate-600">Gaz du sang</legend>
+      <fieldset className="rounded-2xl border border-border p-3">
+        <legend className="px-2 text-xs text-muted">Gaz du sang</legend>
         <div className="grid grid-cols-2 gap-3">
           <FieldStr
             label="pH"
@@ -158,8 +158,8 @@ function ABGTool() {
         </div>
       </fieldset>
 
-      <fieldset className="rounded-2xl border p-3 mt-3">
-        <legend className="px-2 text-xs text-slate-600">Électrolytes</legend>
+      <fieldset className="rounded-2xl border border-border p-3 mt-3">
+        <legend className="px-2 text-xs text-muted">Électrolytes</legend>
         <div className="grid grid-cols-2 gap-3">
           <FieldStr
             label="Na⁺"
@@ -199,7 +199,7 @@ function ABGTool() {
       </fieldset>
 
       <details className="mt-3">
-        <summary className="text-xs text-slate-600 cursor-pointer">
+        <summary className="text-xs text-muted cursor-pointer">
           Options avancées (altitude & physiologie)
         </summary>
         <div className="grid grid-cols-2 gap-3 mt-2">
@@ -232,13 +232,13 @@ function ABGTool() {
         </div>
         <div className="flex gap-2">
           <button
-            className="px-3 py-2 rounded-xl border text-sm hover:bg-slate-50"
+            className="px-3 py-2 rounded-xl border border-border bg-surface text-sm hover:bg-card"
             onClick={onCopy}
           >
             Copier le résumé
           </button>
         </div>
-        <div className="text-[11px] text-slate-500">
+        <div className="text-[11px] text-muted">
           Repères: pH 7.35–7.45 ; PaCO₂ 35–45 ; HCO₃⁻ 22–26 ; P/F ≥ 300 ; AG
           normal ~8–12 (non corrigé) ; lactate ≤ 2.
         </div>
