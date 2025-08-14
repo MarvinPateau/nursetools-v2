@@ -97,7 +97,7 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
   return (
     <section className="pt-6 sm:pt-8 mb-2">
       {/* Ligne de contexte (ton + date + emoji météo discret) */}
-      <div className="flex flex-wrap items-center gap-2 text-[13px] uppercase tracking-wider text-slate-500">
+      <div className="flex flex-wrap items-center gap-2 text-[13px] uppercase tracking-wider text-muted-foreground">
         <span className="inline-flex items-center gap-1">
           <span aria-hidden>{wxIcon}</span>
           <span>{baseTone}</span>
@@ -108,13 +108,13 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
 
       {/* Titre sobre avec gradient léger */}
       <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold leading-tight font-display">
-        <span className="bg-gradient-to-r from-brand-700 via-brand-600 to-cyan-600 bg-clip-text text-transparent">
+        <span className="bg-gradient-to-r from-primary to-info bg-clip-text text-transparent">
           {dynamicTitle}
         </span>
       </h2>
 
       {/* Sous-texte concis */}
-      <p className="mt-2 text-slate-600">
+      <p className="mt-2 text-muted-foreground">
         Calculs rapides, repères utiles et outils patients.
         <span className="hidden sm:inline">
           {' '}
@@ -143,11 +143,11 @@ export function Tabs({
 
   const cls = (is: boolean) =>
     [
-      'group rounded-2xl border transition shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20',
+      'group rounded-2xl border transition shadow-sm focus:outline-none focus:ring-2 focus:ring-ring',
       'flex items-center justify-center gap-2 px-3 py-2 text-sm',
       is
-        ? 'bg-gradient-to-r from-brand-600 to-cyan-500 text-white border-transparent shadow'
-        : 'bg-white/60 hover:bg-white text-slate-700 border-white/60',
+        ? 'bg-gradient-to-r from-primary to-info text-primary-fg border-transparent shadow'
+        : 'bg-bg/60 hover:bg-bg text-foreground border-border/50',
     ].join(' ');
 
   return (
