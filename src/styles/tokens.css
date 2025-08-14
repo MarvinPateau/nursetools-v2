@@ -1,0 +1,36 @@
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --fg: #1f2937;
+  --card: #f9fafb;
+  --muted: #e5e7eb;
+  --primary: #2563eb;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0f172a;
+  --fg: #f1f5f9;
+  --card: #1e293b;
+  --muted: #334155;
+  --primary: #3b82f6;
+}
+
+html, body {
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+@layer utilities {
+  .focus-ring:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+  .touch-target {
+    @apply inline-flex items-center justify-center;
+  }
+  html[data-theme='dark'] .touch-target {
+    min-width: 59px;
+    min-height: 59px;
+  }
+}
