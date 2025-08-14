@@ -23,6 +23,7 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
 
   // Cond météo → emoji & titre discrets (si météo dispo)
   const cond = (weather?.condition || '').toLowerCase();
+  const temp = weather?.temp;
   const wxIcon = cond.includes('pluie')
     ? '🌧️'
     : cond.includes('neige')
@@ -41,14 +42,27 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
 
   const dynamicTitle = useMemo(() => {
     if (cond.includes('pluie'))
-      return 'Chloé, prends le temps — tout en douceur.';
-    if (cond.includes('neige')) return 'Chloé, au chaud et efficace.';
-    if (cond.includes('orage')) return 'Chloé, calme dans la tempête.';
-    if (cond.includes('nuage')) return 'Chloé, l’essentiel, sans nuages.';
+      return '🌧 Un peu de pluie dehors, mais du soleil dans ton cœur.';
+    if (cond.includes('neige'))
+      return '❄️ Temps parfait pour un chocolat chaud sous un plaid.';
+    if (cond.includes('orage'))
+      return '⛈ Calme dans la tempête, Chloé.';
+    if (cond.includes('brouillard'))
+      return '🌫 Horizon flou, mission claire.';
+    if (cond.includes('nuage'))
+      return '🌤 Un temps doux pour adoucir la garde.';
     if (cond.includes('soleil') || cond.includes('ensoleillé'))
-      return 'Chloé, clair et rapide comme un rayon.';
-    return 'Chloé, tout ce qu’il te faut, dans ta poche.';
-  }, [cond]);
+      return '☀️ Un grand soleil pour éclairer ta journée, Chloé !';
+    if (temp !== undefined) {
+      if (temp >= 35)
+        return '🔥 Canicule en vue, pense à bien t’hydrater.';
+      if (temp >= 25) return '🌡 Il fait chaud, courage pour la garde.';
+      if (temp <= 0) return '🥶 Il fait glacial, couvre-toi bien !';
+      if (temp < 10) return '🧥 Temps frais, garde ton gilet à portée.';
+    }
+    if (h >= 21 || h < 6) return '🌙 Douce nuit, prends soin de toi.';
+    return '🌤 Un temps doux pour adoucir la garde.';
+  }, [cond, temp, h]);
 
   const dateStr = now.toLocaleDateString('fr-FR', {
     weekday: 'long',

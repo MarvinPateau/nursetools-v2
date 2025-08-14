@@ -1,7 +1,7 @@
 // File: src/App.tsx
 // Rôle: point d'entrée visuel, gestion d'état d'onglet, layout général (design modernisé et épuré)
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Header, BottomNav } from './Navigation';
 import { Greeting, Tabs } from './Home';
@@ -9,37 +9,15 @@ import { TabContent } from './TabsRouter';
 import { fadeInUp } from './ui/motion/presets';
 import { transition } from './ui/motion/transition';
 import { useReducedMotion } from './ui/motion/ReducedMotion';
+import { WeatherWidget, type Weather } from './WeatherWidget';
 
 export type TabKey = 'calculs' | 'gaz' | 'patient' | 'notes' | 'apropos';
 
 export default function NurseToolkitApp() {
   const [tab, setTab] = useState<TabKey>('gaz');
-  const [weather, setWeather] = useState<{
-    location: string;
-    temp: number;
-    condition: string;
-  } | null>(null);
+  const [weather, setWeather] = useState<Weather | null>(null);
 
   const prefersReduced = useReducedMotion();
-
-  useEffect(() => {
-    const API_KEY = 'd847b58a33ea424498a121309250808';
-    async function loadWeather() {
-      try {
-        const url = `https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=Hyères,FR&lang=fr&aqi=no`;
-        const res = await fetch(url);
-        const data = await res.json();
-        setWeather({
-          location: data.location.name,
-          temp: data.current.temp_c,
-          condition: data.current.condition.text,
-        });
-      } catch (err) {
-        console.error('Erreur météo:', err);
-      }
-    }
-    loadWeather();
-  }, []);
 
   return (
     <div className="min-h-screen text-slate-900 font-sans">
@@ -53,6 +31,7 @@ export default function NurseToolkitApp() {
         transition={transition}
       >
         <Greeting weather={weather} />
+        <WeatherWidget onWeather={setWeather} />
         <Tabs active={tab} onChange={setTab} />
         <AnimatePresence mode="wait">
           <motion.div
