@@ -10,57 +10,82 @@ import { fadeInUp } from './ui/motion/presets';
 import { transition } from './ui/motion/transition';
 import { useReducedMotion } from './ui/motion/ReducedMotion';
 import { WeatherWidget, type Weather } from './WeatherWidget';
+import { MascotProvider, useMascot } from './mascot/useMascot';
+import { MascotNurse } from './mascot/MascotNurse';
 
 export type TabKey = 'calculs' | 'gaz' | 'patient' | 'notes' | 'apropos';
 
 export default function NurseToolkitApp() {
   const [tab, setTab] = useState<TabKey>('gaz');
   const [weather, setWeather] = useState<Weather | null>(null);
+  const [dark, setDark] = useState(false);
 
   const prefersReduced = useReducedMotion();
 
   return (
-    <div className="min-h-screen text-slate-900 font-sans">
-      <Header onChangeTab={setTab} active={tab} />
+    <MascotProvider>
+      <div className={dark ? 'dark' : ''}>
+        <div className="min-h-screen bg-background text-foreground font-sans">
+          <Header
+            onChangeTab={setTab}
+            active={tab}
+            dark={dark}
+            onToggleDark={() => setDark((d) => !d)}
+          />
 
-      <motion.main
-        className="mx-auto w-full max-w-3xl px-4 pb-28 sm:pb-24"
-        initial="hidden"
-        animate="visible"
-        variants={prefersReduced ? undefined : fadeInUp}
-        transition={transition}
-      >
-        <Greeting weather={weather} />
-        <WeatherWidget onWeather={setWeather} />
-        <Tabs active={tab} onChange={setTab} />
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={tab}
-            className="mt-6 rounded-3xl bg-white/60 backdrop-blur-xl shadow-xl p-6 border border-white/70"
+          <motion.main
+            className="mx-auto w-full max-w-3xl px-4 pb-28 sm:pb-24"
             initial="hidden"
             animate="visible"
-            exit="hidden"
             variants={prefersReduced ? undefined : fadeInUp}
             transition={transition}
           >
-            <TabContent active={tab} />
-          </motion.div>
-        </AnimatePresence>
-      </motion.main>
+            <Greeting weather={weather} />
+            <WeatherWidget onWeather={setWeather} />
+            <Tabs active={tab} onChange={setTab} />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={tab}
+                className="mt-6"
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                variants={prefersReduced ? undefined : fadeInUp}
+                transition={transition}
+              >
+                <div className="rounded-2xl bg-card shadow-e3 p-6 border border-border">
+                  <TabContent active={tab} />
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </motion.main>
 
-      <BottomNav active={tab} onChange={setTab} />
+          <BottomNav active={tab} onChange={setTab} />
 
-      <footer className="mt-10 border-t border-white/40 bg-white/60 backdrop-blur">
-        <div className="mx-auto w-full max-w-3xl px-4 py-6 text-sm text-slate-500">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-            <div>
-              ⚠️ Cet outil aide uniquement aux calculs infirmiers — il ne
-              remplace pas l'avis médical.
+          <MascotDisplay />
+          <footer className="mt-10 border-t border-border bg-surface/70 backdrop-blur-md">
+            <div className="mx-auto w-full max-w-3xl px-4 py-6 text-sm text-muted">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <div>
+                  ⚠️ Cet outil aide uniquement aux calculs infirmiers — il ne
+                  remplace pas l'avis médical.
+                </div>
+                <div>© {new Date().getFullYear()} — Fait avec ❤️ pour Chloé</div>
+              </div>
             </div>
-            <div>© {new Date().getFullYear()} — Fait avec ❤️ pour Chloé</div>
-          </div>
+          </footer>
         </div>
-      </footer>
+      </div>
+    </MascotProvider>
+  );
+}
+
+function MascotDisplay() {
+  const { state, enabled } = useMascot();
+  if (!enabled) return null;
+  return (
+    <div className="fixed bottom-24 right-4 z-40" aria-live="polite" role="status">
+      <MascotNurse state={state} />
     </div>
   );
 }

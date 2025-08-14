@@ -3,8 +3,9 @@
 
 import { useState } from 'react';
 
-import { Card, Field, Result } from '../ui/UI';
+import { Card, Field, Result, Select } from '../ui/UI';
 import { round, safeDiv } from '../utils';
+import { useMascot } from '../mascot/useMascot';
 
 export function PatientTab() {
   return (
@@ -24,16 +25,39 @@ export function NotesTab() {
 }
 
 export function AProposTab() {
+  const { enabled, toggleEnabled, reduced, toggleReduced } = useMascot();
   return (
     <section className="mt-6 space-y-6">
       <Card
         title="À propos"
         subtitle="Conçu pour Chloé — usage d’aide uniquement"
       >
-        <p className="text-sm text-slate-700">
+        <p className="text-sm text-muted">
           Toujours vérifier selon le protocole local et réaliser un double
           contrôle pour les calculs. Créé avec ❤️ pour Chloé.
         </p>
+      </Card>
+      <Card title="Paramètres" subtitle="Personnalisation">
+        <div className="space-y-3 text-sm">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={enabled}
+              onChange={toggleEnabled}
+              className="h-4 w-4 rounded border-border"
+            />
+            <span>Mascotte</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={reduced}
+              onChange={toggleReduced}
+              className="h-4 w-4 rounded border-border"
+            />
+            <span>Animations réduites</span>
+          </label>
+        </div>
       </Card>
     </section>
   );
@@ -68,32 +92,34 @@ function CrCl() {
           onChange={(v) => setPoids(Number(v))}
           suffix="kg"
         />
-        <select
-          className="w-full rounded-xl border px-3 py-2 text-base"
+        <Select
+          label="Sexe"
           value={sexe}
-          onChange={(e) => setSexe(e.target.value as 'F' | 'M')}
-        >
-          <option value="F">Femme</option>
-          <option value="M">Homme</option>
-        </select>
-        <select
-          className="w-full rounded-xl border px-3 py-2 text-base"
+          onChange={(v) => setSexe(v as 'F' | 'M')}
+          options={[
+            { v: 'F', l: 'Femme' },
+            { v: 'M', l: 'Homme' },
+          ]}
+        />
+        <Select
+          label="Unité"
           value={unit}
-          onChange={(e) => setUnit(e.target.value as 'umol' | 'mgdl')}
-        >
-          <option value="umol">µmol/L</option>
-          <option value="mgdl">mg/dL</option>
-        </select>
+          onChange={(v) => setUnit(v as 'umol' | 'mgdl')}
+          options={[
+            { v: 'umol', l: 'µmol/L' },
+            { v: 'mgdl', l: 'mg/dL' },
+          ]}
+        />
         <Field
           label={`Créatinine sérique (${unit === 'umol' ? 'µmol/L' : 'mg/dL'})`}
           value={scr}
           onChange={(v) => setScr(Number(v))}
         />
       </div>
-      <Result tone="info">
+      <Result>
         CrCl ≈ <b>{round(crcl)}</b> mL/min
       </Result>
-      <div className="text-[11px] text-slate-500 mt-2">
+      <div className="text-[11px] text-muted mt-2">
         Vérifier la posologie selon protocole local.
       </div>
     </Card>
@@ -164,7 +190,7 @@ function NoteBlock() {
       subtitle="Sauvegardez localement vos repères (reste dans ce navigateur)"
     >
       <textarea
-        className="w-full rounded-xl border p-3 focus:outline-none focus:ring-2 focus:ring-slate-900/20"
+        className="w-full rounded-xl border border-border bg-surface p-3 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-ring"
         placeholder="Écrire une note et appuyer sur Entrée"
         value={input}
         onChange={(e) => setInput(e.target.value)}
@@ -180,14 +206,14 @@ function NoteBlock() {
           {notes.map((n, i) => (
             <li
               key={i}
-              className="rounded-lg border px-3 py-2 text-sm bg-white/70"
+              className="rounded-lg border border-border bg-card/70 px-3 py-2 text-sm"
             >
               {n}
             </li>
           ))}
         </ul>
       )}
-      <div className="text-[11px] text-slate-500 mt-2">
+      <div className="text-[11px] text-muted mt-2">
         Astuce: <em>Ctrl/Cmd + P</em> pour imprimer la page / exporter en PDF.
       </div>
     </Card>

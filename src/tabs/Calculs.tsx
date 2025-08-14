@@ -24,7 +24,7 @@ function QuickPanel() {
   const [c, setC] = useState<number>(10);
   const ml = safeDiv(Number(w) * Number(d), Number(c));
   return (
-    <div className="rounded-3xl border bg-white p-4">
+    <div className="rounded-2xl border border-border bg-card p-4">
       <div className="text-sm font-medium mb-2">Raccourci: dose mg/kg → mL</div>
       <div className="grid grid-cols-3 gap-2 mb-3">
         <MiniField label="Poids" value={w} suffix="kg" onChange={(v) => setW(Number(v))} />
@@ -36,7 +36,7 @@ function QuickPanel() {
           onChange={(v) => setC(Number(v))}
         />
       </div>
-      <div className="rounded-xl border bg-slate-50 text-slate-800 px-3 py-2 text-sm">≈ {round(ml)} mL</div>
+      <div className="rounded-xl border border-border bg-surface px-3 py-2 text-sm text-muted">≈ {round(ml)} mL</div>
     </div>
   );
 }
@@ -83,7 +83,11 @@ function DoseCalculator() {
           <button
             key={m.id}
             onClick={() => setMode(m.id)}
-            className={`px-3 py-1.5 rounded-full text-sm border whitespace-nowrap ${mode === m.id ? "bg-slate-900 text-white border-slate-900" : "bg-white hover:bg-slate-50"}`}
+            className={`px-3 py-1.5 rounded-full text-sm border whitespace-nowrap ${
+              mode === m.id
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-surface text-muted border-border hover:bg-card"
+            }`}
           >
             {m.label}
           </button>
@@ -158,11 +162,11 @@ function DoseCalculator() {
             onChange={(v) => setDoseSouhaitee(Number(v))}
             suffix="mg"
           />
-          <Result tone="info">{res.text}</Result>
+          <Result>{res.text}</Result>
         </div>
       )}
 
-      <div className="text-xs text-slate-500 mt-3">Double contrôle recommandé.</div>
+      <div className="text-xs text-muted mt-3">Double contrôle recommandé.</div>
     </Card>
   );
 }
@@ -240,15 +244,15 @@ function DripRate() {
 function MiniField({ label, value, onChange, suffix }: { label: string; value: number; onChange: (v: number) => void; suffix?: string }) {
   return (
     <label className="block">
-      <div className="text-[11px] text-slate-600">{label}</div>
+      <div className="text-[11px] text-muted">{label}</div>
       <div className="flex items-center gap-1">
         <input
-          className="w-full rounded-lg border px-2 py-1 text-sm"
+          className="w-full rounded-lg border border-border bg-surface px-2 py-1 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-ring"
           type="number"
           value={value}
           onChange={(e) => onChange(toNum(e.target.value))}
         />
-        <span className="text-[11px] text-slate-500">{suffix}</span>
+        <span className="text-[11px] text-muted">{suffix}</span>
       </div>
     </label>
   );
