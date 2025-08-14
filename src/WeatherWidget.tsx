@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import ReactAnimatedWeather from 'react-animated-weather';
 import { useReducedMotion } from './ui/motion/ReducedMotion';
+import { Sprout } from './Sprout';
 
 type Weather = {
   location: string;
@@ -10,59 +12,27 @@ type Weather = {
 type Props = {
   city?: string;
   onWeather?: (w: Weather | null) => void;
+  showSprout?: boolean;
 };
 
-function iconFor(condition: string) {
+function skycon(condition: string) {
   const c = condition.toLowerCase();
-  if (c.includes('pluie'))
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-        <path d="M4 16.5a4.5 4.5 0 0 1 1-8.9 5.5 5.5 0 0 1 10.9 1.4 4 4 0 0 1 2.1 7.5" />
-        <path d="M16 13v3" />
-        <path d="M12 16v3" />
-        <path d="M8 13v3" />
-      </svg>
-    );
-  if (c.includes('neige'))
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-        <path d="M12 2v20" />
-        <path d="M4.93 6.93l14.14 14.14" />
-        <path d="M4.93 21.07L19.07 6.93" />
-        <path d="M2 12h20" />
-      </svg>
-    );
-  if (c.includes('nuage'))
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-        <path d="M17.5 19a4.5 4.5 0 0 0-.9-8.9A5.5 5.5 0 0 0 6 9.5a4 4 0 0 0 1 7.9h10.5z" />
-      </svg>
-    );
-  if (c.includes('orage'))
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-        <path d="M13 16l-3 5" />
-        <path d="M13 16l4-8" />
-        <path d="M3 13a4 4 0 0 1 2-7.5 5.5 5.5 0 0 1 10.9 1.4 4 4 0 0 1 2.1 7.5" />
-      </svg>
-    );
-  // default sun
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-      <circle cx="12" cy="12" r="5" />
-      <path d="M12 1v2" />
-      <path d="M12 21v2" />
-      <path d="M4.22 4.22l1.42 1.42" />
-      <path d="M18.36 18.36l1.42 1.42" />
-      <path d="M1 12h2" />
-      <path d="M21 12h2" />
-      <path d="M4.22 19.78l1.42-1.42" />
-      <path d="M18.36 5.64l1.42-1.42" />
-    </svg>
-  );
+  if (c.includes('pluie')) return 'RAIN';
+  if (c.includes('neige')) return 'SNOW';
+  if (c.includes('nuage')) return 'CLOUDY';
+  if (c.includes('orage')) return 'WIND';
+  return 'CLEAR_DAY';
 }
 
-export function WeatherWidget({ city = 'Solliès-Toucas', onWeather }: Props) {
+function bgFor(condition: string) {
+  const c = condition.toLowerCase();
+  if (c.includes('pluie')) return 'rain';
+  if (c.includes('neige')) return 'snow';
+  if (c.includes('nuage')) return 'cloud';
+  return 'sun';
+}
+
+export function WeatherWidget({ city = 'Solliès-Toucas', onWeather, showSprout }: Props) {
   const [data, setData] = useState<Weather | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -104,7 +74,7 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather }: Props) {
   if (loading) {
     return (
       <div
-        className={`mt-2 h-8 w-32 rounded bg-white/50 ${prefersReduced ? '' : 'animate-pulse'}`}
+        className={`mt-4 h-24 w-full rounded-2xl bg-card border border-border ${prefersReduced ? '' : 'animate-pulse'}`}
         aria-hidden
       />
     );
@@ -112,18 +82,40 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather }: Props) {
 
   if (error || !data) {
     return (
-      <div className="mt-2 text-sm text-slate-500" role="status">
+      <div className="mt-4 text-sm text-muted" role="status">
         {error || 'Météo indisponible'}
       </div>
     );
   }
 
+  const cond = data.condition.toLowerCase();
+  const mood = cond.includes('pluie') ? 'rainy' : 'happy';
+  const message = cond.includes('pluie')
+    ? 'La nature boit la pluie.'
+    : 'Belle journée verdoyante.';
+  const bg = bgFor(data.condition);
+  const icon = skycon(data.condition);
+
   return (
-    <div className="mt-2 flex items-center gap-2 text-slate-700">
-      <span aria-hidden>{iconFor(data.condition)}</span>
-      <span className="text-sm">
-        {Math.round(data.temp)}°C — {data.condition}
-      </span>
+    <div className={`relative mt-4 flex items-center justify-between overflow-hidden rounded-2xl p-4 shadow-e2 border border-border text-white weather-${bg}`}>
+      <div className="flex items-center gap-3">
+        <ReactAnimatedWeather
+          icon={icon}
+          color="#fff"
+          size={48}
+          animate={!prefersReduced}
+        />
+        <div>
+          <div className="text-2xl font-bold">{Math.round(data.temp)}°C</div>
+          <div className="text-sm opacity-90">{data.condition}</div>
+          <div className="text-xs opacity-80">{message}</div>
+        </div>
+      </div>
+      {showSprout && (
+        <span className="ml-2">
+          <Sprout mood={mood} />
+        </span>
+      )}
     </div>
   );
 }
