@@ -3,7 +3,8 @@
 
 import { useState } from 'react';
 
-import { Card, Field, Result, Select } from '../ui/UI';
+import { Card, Field, Result, Select, Toggle } from '../ui/UI';
+import { useMascot } from '../brand/mascot';
 import { round, safeDiv } from '../utils';
 
 export function PatientTab() {
@@ -24,6 +25,7 @@ export function NotesTab() {
 }
 
 export function AProposTab() {
+  const { enabled, toggleEnabled, userReduced, toggleReduced } = useMascot();
   return (
     <section className="mt-6 space-y-6">
       <Card
@@ -34,6 +36,14 @@ export function AProposTab() {
           Toujours vérifier selon le protocole local et réaliser un double
           contrôle pour les calculs. Créé avec ❤️ pour Chloé.
         </p>
+      </Card>
+      <Card title="Paramètres">
+        <Toggle label="Mascotte" checked={enabled} onChange={toggleEnabled} />
+        <Toggle
+          label="Animations réduites"
+          checked={userReduced}
+          onChange={toggleReduced}
+        />
       </Card>
     </section>
   );

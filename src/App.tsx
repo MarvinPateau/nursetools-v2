@@ -1,7 +1,7 @@
 // File: src/App.tsx
 // Rôle: point d'entrée visuel, gestion d'état d'onglet, layout général (design modernisé et épuré)
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Header, BottomNav } from './Navigation';
 import { Greeting, Tabs } from './Home';
@@ -10,15 +10,34 @@ import { fadeInUp } from './ui/motion/presets';
 import { transition } from './ui/motion/transition';
 import { useReducedMotion } from './ui/motion/ReducedMotion';
 import { WeatherWidget, type Weather } from './WeatherWidget';
+import { MascotProvider, MascotNurse, useMascot } from './brand/mascot';
 
 export type TabKey = 'calculs' | 'gaz' | 'patient' | 'notes' | 'apropos';
 
 export default function NurseToolkitApp() {
+  return (
+    <MascotProvider>
+      <AppShell />
+    </MascotProvider>
+  );
+}
+
+function AppShell() {
   const [tab, setTab] = useState<TabKey>('gaz');
   const [weather, setWeather] = useState<Weather | null>(null);
   const [dark, setDark] = useState(false);
+  const { state, setState } = useMascot();
 
   const prefersReduced = useReducedMotion();
+
+  useEffect(() => {
+    setState('hello', 1500);
+  }, [setState]);
+
+  const toggleDark = () => {
+    setDark((d) => !d);
+    setState('nightShift', 1500);
+  };
 
   return (
     <div className={dark ? 'dark' : ''}>
@@ -27,7 +46,7 @@ export default function NurseToolkitApp() {
           onChangeTab={setTab}
           active={tab}
           dark={dark}
-          onToggleDark={() => setDark((d) => !d)}
+          onToggleDark={toggleDark}
         />
 
         <motion.main
@@ -38,7 +57,7 @@ export default function NurseToolkitApp() {
           transition={transition}
         >
           <Greeting weather={weather} />
-          <WeatherWidget onWeather={setWeather} showSprout />
+          <WeatherWidget onWeather={setWeather} />
           <Tabs active={tab} onChange={setTab} />
           <AnimatePresence mode="wait">
             <motion.div
@@ -58,6 +77,8 @@ export default function NurseToolkitApp() {
         </motion.main>
 
         <BottomNav active={tab} onChange={setTab} />
+
+        <MascotNurse state={state} className="fixed bottom-4 right-4" />
 
         <footer className="mt-10 border-t border-border bg-surface/70 backdrop-blur-md">
           <div className="mx-auto w-full max-w-3xl px-4 py-6 text-sm text-muted">

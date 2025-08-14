@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useReducedMotion } from './ui/motion/ReducedMotion';
-import { Sprout } from './Sprout';
 import ReactAnimatedWeather, { type Icon } from 'react-animated-weather';
-import type { SproutMood } from './Sprout';
+import { useMascot, type MascotState } from './brand/mascot';
 
 type Weather = {
   location: string;
@@ -13,23 +12,23 @@ type Weather = {
 type Props = {
   city?: string;
   onWeather?: (w: Weather | null) => void;
-  showSprout?: boolean;
 };
 
-function styleFor(condition: string): { icon: Icon; bg: string; mood: SproutMood } {
+function styleFor(condition: string): { icon: Icon; bg: string; state: MascotState } {
   const c = condition.toLowerCase();
-  if (c.includes('pluie')) return { icon: 'RAIN', bg: 'weather-rainy', mood: 'rainy' };
-  if (c.includes('neige')) return { icon: 'SNOW', bg: 'weather-snowy', mood: 'happy' };
-  if (c.includes('nuage')) return { icon: 'CLOUDY', bg: 'weather-cloudy', mood: 'happy' };
-  if (c.includes('orage')) return { icon: 'SLEET', bg: 'weather-rainy', mood: 'rainy' };
-  return { icon: 'CLEAR_DAY', bg: 'weather-sunny', mood: 'happy' };
+  if (c.includes('pluie')) return { icon: 'RAIN', bg: 'weather-rainy', state: 'rainy' };
+  if (c.includes('neige')) return { icon: 'SNOW', bg: 'weather-snowy', state: 'sunny' };
+  if (c.includes('nuage')) return { icon: 'CLOUDY', bg: 'weather-cloudy', state: 'cloudy' };
+  if (c.includes('orage')) return { icon: 'SLEET', bg: 'weather-rainy', state: 'rainy' };
+  return { icon: 'CLEAR_DAY', bg: 'weather-sunny', state: 'sunny' };
 }
 
-export function WeatherWidget({ city = 'Solliès-Toucas', onWeather, showSprout }: Props) {
+export function WeatherWidget({ city = 'Solliès-Toucas', onWeather }: Props) {
   const [data, setData] = useState<Weather | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const prefersReduced = useReducedMotion();
+  const { setState: setMascot } = useMascot();
 
   useEffect(() => {
     async function load() {
@@ -64,6 +63,13 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather, showSprout 
     load();
   }, [city, onWeather]);
 
+  const { icon, bg, state } = data
+    ? styleFor(data.condition)
+    : { icon: 'CLEAR_DAY' as Icon, bg: 'weather-sunny', state: 'sunny' as MascotState };
+  useEffect(() => {
+    if (data) setMascot(state, 2000);
+  }, [data, state, setMascot]);
+
   if (loading) {
     return (
       <div
@@ -80,8 +86,6 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather, showSprout 
       </div>
     );
   }
-
-  const { icon, bg, mood } = styleFor(data.condition);
   const cond = data.condition.toLowerCase();
   const message = cond.includes('pluie')
     ? 'La nature boit la pluie.'
@@ -107,11 +111,6 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather, showSprout 
             <div className="text-xs opacity-80">{message}</div>
           </div>
         </div>
-        {showSprout && (
-          <span className="ml-2">
-            <Sprout mood={mood} />
-          </span>
-        )}
       </div>
     </div>
   );
