@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useReducedMotion } from './ui/motion/ReducedMotion';
+import { Sprout } from './Sprout';
 
 type Weather = {
   location: string;
@@ -10,6 +11,7 @@ type Weather = {
 type Props = {
   city?: string;
   onWeather?: (w: Weather | null) => void;
+  showSprout?: boolean;
 };
 
 function iconFor(condition: string) {
@@ -62,7 +64,7 @@ function iconFor(condition: string) {
   );
 }
 
-export function WeatherWidget({ city = 'Solliès-Toucas', onWeather }: Props) {
+export function WeatherWidget({ city = 'Solliès-Toucas', onWeather, showSprout }: Props) {
   const [data, setData] = useState<Weather | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -104,7 +106,7 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather }: Props) {
   if (loading) {
     return (
       <div
-        className={`mt-2 h-8 w-32 rounded bg-white/50 ${prefersReduced ? '' : 'animate-pulse'}`}
+        className={`mt-4 h-24 w-full rounded-2xl bg-card border border-border ${prefersReduced ? '' : 'animate-pulse'}`}
         aria-hidden
       />
     );
@@ -112,18 +114,33 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather }: Props) {
 
   if (error || !data) {
     return (
-      <div className="mt-2 text-sm text-slate-500" role="status">
+      <div className="mt-4 text-sm text-muted" role="status">
         {error || 'Météo indisponible'}
       </div>
     );
   }
 
+  const cond = data.condition.toLowerCase();
+  const mood = cond.includes('pluie') ? 'rainy' : 'happy';
+  const message = cond.includes('pluie')
+    ? 'La nature boit la pluie.'
+    : 'Belle journée verdoyante.';
+
   return (
-    <div className="mt-2 flex items-center gap-2 text-slate-700">
-      <span aria-hidden>{iconFor(data.condition)}</span>
-      <span className="text-sm">
-        {Math.round(data.temp)}°C — {data.condition}
-      </span>
+    <div className="mt-4 flex items-center justify-between rounded-2xl bg-card p-4 shadow-e2 border border-border">
+      <div className="flex items-center gap-3">
+        <span aria-hidden className="text-4xl">
+          {iconFor(data.condition)}
+        </span>
+        <div>
+          <div className="text-2xl font-bold text-primary">
+            {Math.round(data.temp)}°C
+          </div>
+          <div className="text-sm text-muted">{data.condition}</div>
+          <div className="text-xs text-muted/80">{message}</div>
+        </div>
+      </div>
+      {showSprout && <span className="ml-2"><Sprout mood={mood} /></span>}
     </div>
   );
 }
