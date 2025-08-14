@@ -41,6 +41,14 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
     : '🌤️';
 
   const dynamicTitle = useMemo(() => {
+    if (cond.includes('tempête'))
+      return '🌪 Tempête dehors, sérénité dedans grâce à toi, ma héroïne.';
+    if (cond.includes('grêle'))
+      return '🌨 Les grêlons tapent, mais tu gardes la réa au chaud.';
+    if (cond.includes('vent'))
+      return '💨 Vent fou, ton calme en réa ne vacille jamais, ma Chloé.';
+    if (cond.includes('bruine'))
+      return '🌦 Bruine légère, parfait pour un câlin avant la garde.';
     if (cond.includes('pluie'))
       return '🌧 Un peu de pluie dehors, mais du soleil dans ton cœur.';
     if (cond.includes('neige'))
@@ -56,11 +64,27 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
     if (temp !== undefined) {
       if (temp >= 35)
         return '🔥 Canicule en vue, pense à bien t’hydrater.';
-      if (temp >= 25) return '🌡 Il fait chaud, courage pour la garde.';
-      if (temp <= 0) return '🥶 Il fait glacial, couvre-toi bien !';
-      if (temp < 10) return '🧥 Temps frais, garde ton gilet à portée.';
+      if (temp >= 30)
+        return '🥵 Grosse chaleur, j’ai glissé une bouteille fraîche dans ton sac.';
+      if (temp >= 25)
+        return '🌡 Il fait chaud, courage pour la garde.';
+      if (temp >= 15)
+        return '🌼 Douce température, ton sourire rassure toute la réa.';
+      if (temp >= 10)
+        return '🍂 Petit air frais, je t’ai laissé un pull dans le casier.';
+      if (temp <= -5)
+        return '🧊 Froid mordant, tu restes la flamme des soins intensifs.';
+      if (temp <= 0)
+        return '🥶 Il fait glacial, couvre-toi bien !';
+      if (temp < 10)
+        return '🧥 Temps frais, garde ton gilet à portée.';
     }
-    if (h >= 21 || h < 6) return '🌙 Douce nuit, prends soin de toi.';
+    if (h >= 21 || h < 6)
+      return '🌙 Douce nuit, prends soin de toi.';
+    if (h >= 6 && h < 9)
+      return '🌅 Bonjour ma star de la réa, ton café t’attend.';
+    if (h >= 18 && h < 21)
+      return '🌆 Fin de garde en vue, je t’attends avec un gros câlin.';
     return '🌤 Un temps doux pour adoucir la garde.';
   }, [cond, temp, h]);
 
