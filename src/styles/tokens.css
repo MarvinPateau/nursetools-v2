@@ -1,0 +1,38 @@
+/* File: src/styles/tokens.css */
+/* Purpose: define semantic color tokens and dark mode adjustments */
+
+:root {
+  --bg: 255 255 255; /* white */
+  --fg: 17 24 39; /* slate-900 */
+  --card: 255 255 255; /* white */
+  --muted: 107 114 128; /* slate-500 */
+  --primary: 2 132 199; /* sky-600 */
+}
+
+[data-theme='dark'] {
+  --bg: 15 23 42; /* slate-900 */
+  --fg: 241 245 249; /* slate-100 */
+  --card: 30 41 59; /* slate-800 */
+  --muted: 148 163 184; /* slate-400 */
+  --primary: 56 189 248; /* sky-400 */
+}
+
+html {
+  color: rgb(var(--fg));
+  background-color: rgb(var(--bg));
+}
+
+.focus-ring:focus {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  outline: 2px solid rgb(var(--primary));
+  outline-offset: 2px;
+}
+
+[data-theme='dark'] button,
+[data-theme='dark'] a {
+  min-width: 44px;
+  min-height: 44px;
+}
+

@@ -2,6 +2,7 @@
 // Rôle: en-têtes et navigation (desktop + mobile)
 
 import type { TabKey } from './App';
+import ThemeToggle from './components/layout/ThemeToggle';
 
 export function Header({
   onChangeTab,
@@ -22,41 +23,44 @@ export function Header({
             <span>Outils de Chloé</span>
           </span>
         </h1>
-        <nav
-          className="hidden sm:flex gap-2 text-sm"
-          aria-label="Navigation principale"
-        >
-          <TopLink
-            id="calculs"
-            label="Calculs"
-            active={active}
-            onClick={onChangeTab}
-          />
-          <TopLink
-            id="gaz"
-            label="Gazométrie"
-            active={active}
-            onClick={onChangeTab}
-          />
-          <TopLink
-            id="patient"
-            label="Patient"
-            active={active}
-            onClick={onChangeTab}
-          />
-          <TopLink
-            id="notes"
-            label="Notes"
-            active={active}
-            onClick={onChangeTab}
-          />
-          <TopLink
-            id="apropos"
-            label="À propos"
-            active={active}
-            onClick={onChangeTab}
-          />
-        </nav>
+        <div className="flex items-center gap-3">
+          <nav
+            className="hidden sm:flex gap-2 text-sm"
+            aria-label="Navigation principale"
+          >
+            <TopLink
+              id="calculs"
+              label="Calculs"
+              active={active}
+              onClick={onChangeTab}
+            />
+            <TopLink
+              id="gaz"
+              label="Gazométrie"
+              active={active}
+              onClick={onChangeTab}
+            />
+            <TopLink
+              id="patient"
+              label="Patient"
+              active={active}
+              onClick={onChangeTab}
+            />
+            <TopLink
+              id="notes"
+              label="Notes"
+              active={active}
+              onClick={onChangeTab}
+            />
+            <TopLink
+              id="apropos"
+              label="À propos"
+              active={active}
+              onClick={onChangeTab}
+            />
+          </nav>
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
