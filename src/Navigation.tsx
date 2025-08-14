@@ -1,62 +1,68 @@
 // File: src/Navigation.tsx
 // Rôle: en-têtes et navigation (desktop + mobile)
 
+import React from 'react';
 import type { TabKey } from './App';
 
 export function Header({
   onChangeTab,
   active,
+  sprout,
 }: {
   onChangeTab: (t: TabKey) => void;
   active: TabKey;
+  sprout?: React.ReactNode;
 }) {
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-xl bg-white/60 border-b border-white/40">
+    <header className="sticky top-0 z-40 backdrop-blur-xl bg-bg/60 border-b border-border/50">
       <div className="mx-auto w-full max-w-3xl px-4 py-3 flex items-center justify-between">
         <h1 className="text-xl sm:text-2xl font-semibold tracking-tight font-display">
           <span className="inline-flex items-center gap-2">
             <span
-              className="inline-block h-6 w-6 rounded-xl bg-gradient-to-br from-brand-500 to-cyan-500"
+              className="inline-block h-6 w-6 rounded-xl bg-primary"
               aria-hidden
             />
             <span>Outils de Chloé</span>
           </span>
         </h1>
-        <nav
-          className="hidden sm:flex gap-2 text-sm"
-          aria-label="Navigation principale"
-        >
-          <TopLink
-            id="calculs"
-            label="Calculs"
-            active={active}
-            onClick={onChangeTab}
-          />
-          <TopLink
-            id="gaz"
-            label="Gazométrie"
-            active={active}
-            onClick={onChangeTab}
-          />
-          <TopLink
-            id="patient"
-            label="Patient"
-            active={active}
-            onClick={onChangeTab}
-          />
-          <TopLink
-            id="notes"
-            label="Notes"
-            active={active}
-            onClick={onChangeTab}
-          />
-          <TopLink
-            id="apropos"
-            label="À propos"
-            active={active}
-            onClick={onChangeTab}
-          />
-        </nav>
+        <div className="flex items-center gap-4">
+          <nav
+            className="hidden sm:flex gap-2 text-sm"
+            aria-label="Navigation principale"
+          >
+            <TopLink
+              id="calculs"
+              label="Calculs"
+              active={active}
+              onClick={onChangeTab}
+            />
+            <TopLink
+              id="gaz"
+              label="Gazométrie"
+              active={active}
+              onClick={onChangeTab}
+            />
+            <TopLink
+              id="patient"
+              label="Patient"
+              active={active}
+              onClick={onChangeTab}
+            />
+            <TopLink
+              id="notes"
+              label="Notes"
+              active={active}
+              onClick={onChangeTab}
+            />
+            <TopLink
+              id="apropos"
+              label="À propos"
+              active={active}
+              onClick={onChangeTab}
+            />
+          </nav>
+          {sprout && <div className="hidden sm:block" aria-hidden>{sprout}</div>}
+        </div>
       </div>
     </header>
   );
@@ -77,10 +83,10 @@ export function TopLink({
   return (
     <button
       onClick={() => onClick(id)}
-      className={`px-3 py-1.5 rounded-full border transform-gpu transition-transform duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-brand-500/20 hover:scale-105 active:scale-95 ${
+      className={`px-3 py-1.5 rounded-full border transform-gpu transition-transform duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-ring hover:scale-105 active:scale-95 ${
         is
-          ? 'bg-gradient-to-r from-brand-600 to-cyan-500 text-white border-transparent shadow'
-          : 'bg-white/60 hover:bg-white text-slate-700 border-white/60'
+          ? 'bg-primary text-primary-fg border-transparent shadow'
+          : 'bg-bg/60 hover:bg-bg text-foreground border-border/50'
       }`}
       aria-current={is ? 'page' : undefined}
     >
@@ -108,7 +114,7 @@ export function BottomNav({
       className="fixed bottom-0 inset-x-0 z-40 sm:hidden"
       aria-label="Navigation mobile"
     >
-      <div className="mx-auto max-w-3xl bg-white/60 backdrop-blur-xl border-t border-white/40">
+      <div className="mx-auto max-w-3xl bg-bg/60 backdrop-blur-xl border-t border-border/50">
         <div className="grid grid-cols-5">
           {items.map((t) => {
             const is = active === t.id;
@@ -116,8 +122,8 @@ export function BottomNav({
               <button
                 key={t.id}
                 onClick={() => onChange(t.id)}
-                className={`flex flex-col items-center justify-center py-2 text-xs transform-gpu transition-transform duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-brand-500/20 hover:scale-105 active:scale-95 ${
-                  is ? 'text-brand-600' : 'text-slate-500'
+                className={`flex flex-col items-center justify-center py-2 text-xs transform-gpu transition-transform duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-ring hover:scale-105 active:scale-95 ${
+                  is ? 'text-primary' : 'text-muted-foreground'
                 }`}
                 aria-current={is ? 'page' : undefined}
               >

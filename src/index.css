@@ -2,37 +2,99 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Reset minimal pour Tailwind */
-* {
-  box-sizing: border-box;
-}
+@layer base {
+  :root {
+    /* Couleurs sémantiques claires */
+    --bg: 0 0% 100%;
+    --foreground: 220 13% 18%;
+    --surface: 0 0% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 18%;
+    --primary: 153 47% 40%;
+    --primary-fg: 0 0% 100%;
+    --muted: 140 20% 96%;
+    --muted-foreground: 150 3% 45%;
+    --border: 150 4% 80%;
+    --ring: 153 47% 40%;
+    --success: 151 55% 35%;
+    --success-fg: 0 0% 100%;
+    --warn: 40 100% 45%;
+    --warn-fg: 0 0% 100%;
+    --danger: 356 72% 45%;
+    --danger-fg: 0 0% 100%;
+    --info: 199 89% 48%;
+    --info-fg: 0 0% 100%;
+  }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  .dark {
+    /* Palette sombre douce pour les nuits de garde */
+    --bg: 146 30% 8%;
+    --foreground: 0 0% 95%;
+    --surface: 146 22% 12%;
+    --card: 146 22% 14%;
+    --card-foreground: 0 0% 95%;
+    --primary: 153 47% 40%;
+    --primary-fg: 0 0% 100%;
+    --muted: 146 15% 18%;
+    --muted-foreground: 150 5% 65%;
+    --border: 146 20% 18%;
+    --ring: 153 47% 40%;
+    --success: 151 55% 40%;
+    --success-fg: 0 0% 10%;
+    --warn: 40 95% 50%;
+    --warn-fg: 0 0% 10%;
+    --danger: 356 75% 60%;
+    --danger-fg: 0 0% 10%;
+    --info: 199 89% 60%;
+    --info-fg: 0 0% 10%;
+  }
 
-#root {
-  min-height: 100vh;
-}
+  /* Reset minimal pour Tailwind */
+  * {
+    box-sizing: border-box;
+  }
 
-/* Styles pour les éléments de formulaire */
-input,
-select,
-textarea {
-  font-family: inherit;
-}
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: hsl(var(--bg));
+    color: hsl(var(--foreground));
+    background-image: radial-gradient(
+      hsl(var(--foreground) / 0.03) 1px,
+      transparent 1px
+    );
+    background-size: 24px 24px;
+  }
 
-/* Amélioration de l'accessibilité */
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
+  #root {
+    min-height: 100vh;
+  }
+
+  /* Styles pour les éléments de formulaire */
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+  }
+
+  /* Amélioration de l'accessibilité */
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  @media (forced-colors: active) {
+    html,
+    body {
+      background-image: none;
+    }
+  }
 }

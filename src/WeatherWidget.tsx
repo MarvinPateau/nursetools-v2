@@ -104,7 +104,9 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather }: Props) {
   if (loading) {
     return (
       <div
-        className={`mt-2 h-8 w-32 rounded bg-white/50 ${prefersReduced ? '' : 'animate-pulse'}`}
+        className={`mt-4 h-24 w-full rounded-xl bg-card/50 ${
+          prefersReduced ? '' : 'animate-pulse'
+        }`}
         aria-hidden
       />
     );
@@ -112,18 +114,38 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather }: Props) {
 
   if (error || !data) {
     return (
-      <div className="mt-2 text-sm text-slate-500" role="status">
+      <div
+        className="mt-4 h-24 rounded-xl border border-border bg-card flex items-center justify-center text-sm text-muted-foreground"
+        role="status"
+      >
         {error || 'Météo indisponible'}
       </div>
     );
   }
 
+  const msg =
+    data.temp >= 25
+      ? 'Reste hydraté·e'
+      : data.temp <= 0
+      ? 'Couvre-toi !'
+      : 'Belle journée';
+
   return (
-    <div className="mt-2 flex items-center gap-2 text-slate-700">
-      <span aria-hidden>{iconFor(data.condition)}</span>
-      <span className="text-sm">
-        {Math.round(data.temp)}°C — {data.condition}
-      </span>
+    <div className="mt-4 flex h-24 items-center justify-between rounded-xl border border-border bg-card p-4 shadow-elevation-1">
+      <div className="flex items-center gap-3 text-foreground">
+        <span className="h-10 w-10" aria-hidden>
+          {iconFor(data.condition)}
+        </span>
+        <div>
+          <div className="text-3xl font-bold leading-none">
+            {Math.round(data.temp)}°C
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {data.condition}
+          </div>
+        </div>
+      </div>
+      <p className="text-xs text-muted-foreground italic">{msg}</p>
     </div>
   );
 }
