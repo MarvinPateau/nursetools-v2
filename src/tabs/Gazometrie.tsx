@@ -92,11 +92,11 @@ function ABGTool() {
     [pH, PaCO2, HCO3]
   );
 
-  const pfTone: 'ok' | 'warn' | 'danger' | 'info' =
-    pf >= 300 ? 'ok' : pf >= 200 ? 'info' : pf >= 100 ? 'warn' : 'danger';
-  const lactTone: 'ok' | 'warn' | 'danger' =
+  const pfTone: 'success' | 'warn' | 'danger' | 'info' =
+    pf >= 300 ? 'success' : pf >= 200 ? 'info' : pf >= 100 ? 'warn' : 'danger';
+  const lactTone: 'success' | 'warn' | 'danger' =
     Number.isFinite(lactate) && lactate <= 2
-      ? 'ok'
+      ? 'success'
       : Number.isFinite(lactate) && lactate <= 4
       ? 'warn'
       : 'danger';

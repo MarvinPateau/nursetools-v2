@@ -15,12 +15,12 @@ export function Card({
 }) {
   return (
     <section
-      className="rounded-3xl border bg-white p-5 shadow-sm hover:shadow-md transition-shadow"
+      className="rounded-2xl border border-border bg-card p-5 shadow-e1 hover:shadow-e2 transition-shadow"
       aria-label={title}
     >
       <div className="mb-4">
         <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
-        {subtitle && <p className="text-sm text-slate-600 mt-1">{subtitle}</p>}
+        {subtitle && <p className="text-sm text-muted mt-1">{subtitle}</p>}
       </div>
       {children}
     </section>
@@ -53,11 +53,11 @@ export function Field({
   const id = React.useId();
   return (
     <label className="block mb-3" htmlFor={id}>
-      <div className="text-sm text-slate-700 mb-1">{label}</div>
+      <div className="text-sm text-muted mb-1">{label}</div>
       <div className="flex items-center gap-2">
         <input
           id={id}
-          className="w-full rounded-xl border px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-slate-900/20"
+          className="w-full rounded-md border border-border bg-surface px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-ring"
           type={type}
           inputMode={type === 'number' ? 'decimal' : undefined}
           value={value}
@@ -73,7 +73,7 @@ export function Field({
             )
           }
         />
-        {suffix && <div className="text-sm text-slate-500">{suffix}</div>}
+        {suffix && <div className="text-sm text-muted">{suffix}</div>}
       </div>
     </label>
   );
@@ -95,23 +95,23 @@ export function FieldStr({
   const id = React.useId();
   return (
     <label className="block mb-3" htmlFor={id}>
-      <div className="text-sm text-slate-700 mb-1">{label}</div>
+      <div className="text-sm text-muted mb-1">{label}</div>
       <div className="flex items-center gap-2">
         <input
           id={id}
-          className="w-full rounded-xl border px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-slate-900/20"
+          className="w-full rounded-md border border-border bg-surface px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-ring"
           type="text"
           inputMode="decimal"
           value={value}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
         />
-        {suffix && <div className="text-sm text-slate-500">{suffix}</div>}
+        {suffix && <div className="text-sm text-muted">{suffix}</div>}
         {value !== '' && (
           <button
             type="button"
             aria-label="Effacer"
-            className="text-slate-500 text-sm px-2 py-1 rounded-lg border hover:bg-slate-50"
+            className="text-muted text-sm px-2 py-1 rounded-md border border-border hover:bg-surface"
             onClick={() => onChange('')}
           >
             ×
@@ -136,9 +136,9 @@ export function Select({
 }) {
   return (
     <label className="block mb-3">
-      <div className="text-sm text-slate-700 mb-1">{label}</div>
+      <div className="text-sm text-muted mb-1">{label}</div>
       <select
-        className="w-full rounded-xl border px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-slate-900/20 bg-white"
+        className="w-full rounded-md border border-border bg-surface px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-ring"
         value={String(value)}
         onChange={(e) =>
           onChange(
@@ -169,7 +169,7 @@ export function Toggle({ label, checked, onChange }: ToggleProps) {
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
       />
-      <span className="text-sm text-slate-700">{label}</span>
+      <span className="text-sm text-muted">{label}</span>
     </label>
   );
 }
@@ -179,18 +179,16 @@ export function Chip({
   tone = 'info',
 }: {
   children: React.ReactNode;
-  tone?: 'ok' | 'warn' | 'danger' | 'info';
+  tone?: 'success' | 'warn' | 'danger' | 'info';
 }) {
-  const map: Record<'ok' | 'warn' | 'danger' | 'info', string> = {
-    ok: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    warn: 'bg-amber-50 text-amber-700 border-amber-200',
-    danger: 'bg-rose-50 text-rose-700 border-rose-200',
-    info: 'bg-slate-50 text-slate-700 border-slate-200',
+  const map: Record<'success' | 'warn' | 'danger' | 'info', string> = {
+    success: 'bg-success/10 text-success border-success/20',
+    warn: 'bg-warn/10 text-warn border-warn/20',
+    danger: 'bg-danger/10 text-danger border-danger/20',
+    info: 'bg-info/10 text-info border-info/20',
   };
   return (
-    <span
-      className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 ${map[tone]}`}
-    >
+    <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 ${map[tone]}`}>
       {children}
     </span>
   );
@@ -198,7 +196,7 @@ export function Chip({
 
 export function Badge({ label }: { label: string }) {
   return (
-    <div className="text-xs rounded-full border px-2 py-1 bg-slate-50 text-slate-700">
+    <div className="text-xs rounded-full border border-border px-2 py-1 bg-surface text-muted">
       {label}
     </div>
   );
@@ -206,18 +204,18 @@ export function Badge({ label }: { label: string }) {
 
 export function Result({
   children,
-  tone = 'ok',
+  tone = 'success',
 }: {
   children: React.ReactNode;
-  tone?: 'ok' | 'warn' | 'danger' | 'info';
+  tone?: 'success' | 'warn' | 'danger' | 'info';
 }) {
-  const toneMap: Record<'ok' | 'warn' | 'danger' | 'info', string> = {
-    ok: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    warn: 'bg-amber-50 text-amber-700 border-amber-200',
-    danger: 'bg-rose-50 text-rose-700 border-rose-200',
-    info: 'bg-slate-50 text-slate-700 border-slate-200',
+  const toneMap: Record<'success' | 'warn' | 'danger' | 'info', string> = {
+    success: 'bg-success/10 text-success border-success/20',
+    warn: 'bg-warn/10 text-warn border-warn/20',
+    danger: 'bg-danger/10 text-danger border-danger/20',
+    info: 'bg-info/10 text-info border-info/20',
   };
-  const styles = toneMap[tone] || toneMap.ok;
+  const styles = toneMap[tone] || toneMap.success;
   return (
     <div className={`rounded-2xl border px-4 py-3 text-sm ${styles}`}>
       {children}
