@@ -3,13 +3,13 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Header, BottomNav } from './Navigation';
-import { Greeting, Tabs } from './Home';
-import { TabContent } from './TabsRouter';
-import { fadeInUp } from './ui/motion/presets';
-import { transition } from './ui/motion/transition';
-import { useReducedMotion } from './ui/motion/ReducedMotion';
-import { WeatherWidget, type Weather } from './WeatherWidget';
+import { Header, BottomNav } from '@/Navigation';
+import { Greeting, Tabs } from '@/Home';
+import { TabContent } from '@/TabsRouter';
+import { fadeInUp } from '@/ui/motion/presets';
+import { transition } from '@/ui/motion/transition';
+import { useReducedMotion } from '@/ui/motion/ReducedMotion';
+import { WeatherWidget, type Weather } from '@/WeatherWidget';
 
 export type TabKey = 'calculs' | 'gaz' | 'patient' | 'notes' | 'apropos';
 
