@@ -17,6 +17,64 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+:root {
+  --color-bg: #f6f9f7;
+  --color-surface: #ffffff;
+  --color-card: #f0f5f2;
+  --color-primary: #166534;
+  --color-primary-fg: #ffffff;
+  --color-fg: #1f2937;
+  --color-muted: #4b5563;
+  --color-border: #94a3b8;
+  --color-ring: #16a34a;
+  --color-success: #16a34a;
+  --color-warn: #ca8a04;
+  --color-danger: #dc2626;
+  --color-info: #0ea5e9;
+  --color-mint: #a7f3d0;
+  --color-moss: #4d7c0f;
+}
+
+.dark {
+  --color-bg: #0d1b14;
+  --color-surface: #16281d;
+  --color-card: #1d3425;
+  --color-primary: #4ade80;
+  --color-primary-fg: #0d1b14;
+  --color-fg: #e2e8f0;
+  --color-muted: #9ca3af;
+  --color-border: #2e4b35;
+  --color-ring: #34d399;
+  --color-success: #22c55e;
+  --color-warn: #eab308;
+  --color-danger: #f87171;
+  --color-info: #38bdf8;
+  --color-mint: #34d399;
+  --color-moss: #a3e635;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M0 0h40v40H0z' fill='%23000000' fill-opacity='0.02'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@media (prefers-contrast: more) {
+  body::before {
+    display: none;
+  }
+}
+
 #root {
   min-height: 100vh;
 }
@@ -33,6 +91,47 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid var(--color-ring);
   outline-offset: 2px;
+}
+
+/* Weather widget backgrounds */
+.weather-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.weather-bg {
+  position: absolute;
+  inset: 0;
+  background-size: 200% 200%;
+  animation: weather-bg 15s ease infinite;
+}
+
+.weather-sunny {
+  background-image: linear-gradient(120deg, #fcd34d, #f97316, #fde68a);
+}
+
+.weather-rainy {
+  background-image: linear-gradient(120deg, #1e3a8a, #0ea5e9, #1e40af);
+}
+
+.weather-cloudy {
+  background-image: linear-gradient(120deg, #94a3b8, #64748b, #94a3b8);
+}
+
+.weather-snowy {
+  background-image: linear-gradient(120deg, #e0f2fe, #bae6fd, #7dd3fc);
+}
+
+@keyframes weather-bg {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
