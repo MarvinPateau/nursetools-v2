@@ -5,6 +5,7 @@ Outil léger pour infirmières et infirmiers : calculs, repères et maintenant u
 ## Configuration
 
 1. Copier `.env.example` en `.env.local` et y renseigner votre clé [WeatherAPI](https://www.weatherapi.com/).
+   Sans cette variable, le widget affichera « Clé API manquante ».
 
 ```
 cp .env.example .env.local

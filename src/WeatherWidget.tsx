@@ -70,9 +70,14 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather }: Props) {
 
   useEffect(() => {
     async function load() {
+      const key = import.meta.env.VITE_WEATHER_API_KEY;
+      if (!key) {
+        setError('Clé API manquante');
+        onWeather?.(null);
+        setLoading(false);
+        return;
+      }
       try {
-        const key = import.meta.env.VITE_WEATHER_API_KEY;
-        if (!key) throw new Error('Missing API key');
         const url = `https://api.weatherapi.com/v1/current.json?key=${key}&q=${encodeURIComponent(city)}&lang=fr&aqi=no`;
         const res = await fetch(url);
         if (!res.ok) throw new Error('Erreur réseau');
