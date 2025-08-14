@@ -11,6 +11,7 @@ import {
   celsiusToFahrenheit,
   fahrenheitToCelsius,
 } from '../utils';
+import { StatusBadge } from '../ui/StatusBadge';
 
 export function Tests() {
   const cases = [
@@ -81,21 +82,20 @@ export function Tests() {
 
   return (
     <section className="mt-6">
-      <details className="rounded-2xl border bg-white p-4">
-        <summary
-          className={`cursor-pointer select-none text-sm font-medium ${
-            allPass ? 'text-emerald-700' : 'text-rose-700'
-          }`}
-        >
-          Tests intégrés: {allPass ? 'OK' : 'ÉCHEC'}
+      <details className="rounded-2xl border border-border bg-card p-4">
+        <summary className="cursor-pointer select-none text-sm font-medium flex items-center gap-2">
+          Tests intégrés:
+          <StatusBadge status={allPass ? 'success' : 'danger'} label={allPass ? 'OK' : 'ÉCHEC'} />
         </summary>
         <ul className="mt-3 space-y-2 text-sm">
           {cases.map((t, i) => (
             <li key={i} className="flex items-center justify-between">
               <span>{t.name}</span>
-              <span className={t.pass ? 'text-emerald-700' : 'text-rose-700'}>
-                attendu {round(t.expected)} / obtenu {round(t.actual)} —{' '}
-                {t.pass ? 'OK' : 'KO'}
+              <span className="flex items-center gap-2">
+                <span>
+                  attendu {round(t.expected)} / obtenu {round(t.actual)}
+                </span>
+                <StatusBadge status={t.pass ? 'success' : 'danger'} label={t.pass ? 'OK' : 'KO'} />
               </span>
             </li>
           ))}
