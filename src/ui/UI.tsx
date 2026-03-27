@@ -57,7 +57,7 @@ export function Field({
       <div className="flex items-center gap-2">
         <input
           id={id}
-          className="w-full rounded-md border border-border bg-surface px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full rounded-md border border-border bg-surface px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-ring"
           type={type}
           inputMode={type === 'number' ? 'decimal' : undefined}
           value={value}
@@ -99,7 +99,7 @@ export function FieldStr({
       <div className="flex items-center gap-2">
         <input
           id={id}
-          className="w-full rounded-md border border-border bg-surface px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full rounded-md border border-border bg-surface px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-ring"
           type="text"
           inputMode="decimal"
           value={value}
@@ -138,7 +138,7 @@ export function Select({
     <label className="block mb-3">
       <div className="text-sm text-muted mb-1">{label}</div>
       <select
-        className="w-full rounded-md border border-border bg-surface px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-ring"
+        className="w-full rounded-md border border-border bg-surface px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-ring"
         value={String(value)}
         onChange={(e) =>
           onChange(
@@ -217,7 +217,7 @@ export function Result({
   };
   const styles = toneMap[tone] || toneMap.success;
   return (
-    <div className={`rounded-2xl border px-4 py-3 text-sm ${styles}`}>
+    <div className={`mt-3 rounded-2xl border px-4 py-4 text-base font-semibold tracking-tight tabular-nums ${styles}`}>
       {children}
     </div>
   );

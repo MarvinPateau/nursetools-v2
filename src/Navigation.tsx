@@ -1,101 +1,51 @@
-// File: src/Navigation.tsx
-// Rôle: en-têtes et navigation (desktop + mobile)
-
-import type { TabKey } from './App';
-
-function Sun() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="12" cy="12" r="5" />
-      <path d="M12 1v2" />
-      <path d="M12 21v2" />
-      <path d="M4.22 4.22l1.42 1.42" />
-      <path d="M18.36 18.36l1.42 1.42" />
-      <path d="M1 12h2" />
-      <path d="M21 12h2" />
-      <path d="M4.22 19.78l1.42-1.42" />
-      <path d="M18.36 5.64l1.42-1.42" />
-    </svg>
-  );
-}
-
-function Moon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z" />
-    </svg>
-  );
-}
+import { ArrowLeft, Grid2x2, Moon, NotebookPen, Settings, Sun, Wrench } from 'lucide-react';
+import type { ReactNode } from 'react';
+import type { SectionKey } from './App';
 
 export function Header({
-  onChangeTab,
-  active,
+  title,
   dark,
   onToggleDark,
+  onBack,
 }: {
-  onChangeTab: (t: TabKey) => void;
-  active: TabKey;
+  title: string;
   dark: boolean;
   onToggleDark: () => void;
+  onBack?: () => void;
 }) {
   return (
-    <header className="sticky top-0 z-40 bg-surface/70 backdrop-blur-md shadow-e2 border-b border-border">
-      <div className="mx-auto w-full max-w-3xl px-4 py-3 flex items-center justify-between">
-        <h1 className="text-xl sm:text-2xl font-semibold tracking-tight font-display">
-          <span className="inline-flex items-center gap-2">
-            <span className="inline-block h-6 w-6 rounded-xl bg-primary" aria-hidden />
-            <span>Outils de Chloé</span>
-          </span>
-        </h1>
-        <div className="flex items-center gap-2">
-          <nav
-            className="hidden sm:flex gap-2 text-sm"
-            aria-label="Navigation principale"
-          >
-            <TopLink id="calculs" label="Calculs" active={active} onClick={onChangeTab} />
-            <TopLink id="gaz" label="Gazométrie" active={active} onClick={onChangeTab} />
-            <TopLink id="patient" label="Patient" active={active} onClick={onChangeTab} />
-            <TopLink id="notes" label="Notes" active={active} onClick={onChangeTab} />
-            <TopLink id="apropos" label="À propos" active={active} onClick={onChangeTab} />
-          </nav>
-          <button
-            onClick={onToggleDark}
-            aria-label="Changer de thème"
-            className="p-2 rounded-full hover:bg-surface focus:outline-none focus:ring-2 focus:ring-ring"
-            aria-pressed={dark}
-          >
-            {dark ? <Sun /> : <Moon />}
-          </button>
+    <header className="sticky top-0 z-40 border-b border-border bg-surface/92 backdrop-blur-xl">
+      <div className="mx-auto w-full max-w-4xl px-4 py-3 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 min-w-0">
+          {onBack ? (
+            <button
+              type="button"
+              onClick={onBack}
+              aria-label="Retour"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-muted hover:text-slate-900 dark:hover:text-slate-100"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+          ) : (
+            <div className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-primary">
+              <Grid2x2 className="h-4 w-4" />
+            </div>
+          )}
+          <h1 className="truncate text-lg sm:text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+            {title}
+          </h1>
         </div>
+
+        <button
+          onClick={onToggleDark}
+          aria-label="Changer de thème"
+          className="p-2.5 rounded-full border border-border bg-card hover:bg-surface focus:outline-none focus:ring-2 focus:ring-ring transition"
+          aria-pressed={dark}
+        >
+          {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        </button>
       </div>
     </header>
-  );
-}
-
-export function TopLink({
-  id,
-  label,
-  active,
-  onClick,
-}: {
-  id: TabKey;
-  label: string;
-  active: TabKey;
-  onClick: (t: TabKey) => void;
-}) {
-  const is = active === id;
-  return (
-    <button
-      onClick={() => onClick(id)}
-      className={`px-3 py-1.5 rounded-full border transform-gpu transition-transform duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-ring hover:scale-105 active:scale-95 ${
-        is
-          ? 'bg-gradient-to-r from-primary to-mint text-primary-foreground border-transparent shadow-e2'
-          : 'bg-surface hover:bg-surface/80 text-muted border-border'
-      }`}
-      aria-current={is ? 'page' : undefined}
-    >
-      {label}
-    </button>
   );
 }
 
@@ -103,38 +53,35 @@ export function BottomNav({
   active,
   onChange,
 }: {
-  active: TabKey;
-  onChange: (t: TabKey) => void;
+  active: SectionKey;
+  onChange: (t: SectionKey) => void;
 }) {
-  const items: { id: TabKey; icon: string; label: string }[] = [
-    { id: 'calculs', icon: '💊', label: 'Calculs' },
-    { id: 'gaz', icon: '🩸', label: 'Gaz' },
-    { id: 'patient', icon: '🧪', label: 'Patient' },
-    { id: 'notes', icon: '🗒️', label: 'Notes' },
-    { id: 'apropos', icon: 'ℹ️', label: 'Infos' },
+  const items: { id: SectionKey; icon: ReactNode; label: string }[] = [
+    { id: 'home', icon: <Grid2x2 className="h-4 w-4" />, label: 'Accueil' },
+    { id: 'tools', icon: <Wrench className="h-4 w-4" />, label: 'Outils' },
+    { id: 'memos', icon: <NotebookPen className="h-4 w-4" />, label: 'Mémos' },
+    { id: 'settings', icon: <Settings className="h-4 w-4" />, label: 'Réglages' },
   ];
+
   return (
-    <nav
-      className="fixed bottom-0 inset-x-0 z-40 sm:hidden"
-      aria-label="Navigation mobile"
-    >
-      <div className="mx-auto max-w-3xl bg-surface/70 backdrop-blur-md border-t border-border shadow-e2">
-        <div className="grid grid-cols-5">
+    <nav className="fixed bottom-0 inset-x-0 z-50" aria-label="Navigation principale mobile">
+      <div className="mx-auto max-w-4xl bg-surface border-t border-border shadow-e4">
+        <div className="grid grid-cols-4 gap-1 px-2 py-2">
           {items.map((t) => {
             const is = active === t.id;
             return (
               <button
                 key={t.id}
                 onClick={() => onChange(t.id)}
-                className={`flex flex-col items-center justify-center py-2 text-xs transform-gpu transition-transform duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-ring hover:scale-105 active:scale-95 ${
-                  is ? 'text-primary' : 'text-muted'
+                className={`flex flex-col items-center justify-center rounded-xl py-2 text-[11px] transition duration-200 focus:outline-none focus:ring-2 focus:ring-ring ${
+                  is ? 'bg-card text-primary shadow-e2' : 'text-muted hover:bg-card/80'
                 }`}
                 aria-current={is ? 'page' : undefined}
               >
                 <span className="text-base leading-none" aria-hidden>
                   {t.icon}
                 </span>
-                <span>{t.label}</span>
+                <span className="mt-1">{t.label}</span>
               </button>
             );
           })}
