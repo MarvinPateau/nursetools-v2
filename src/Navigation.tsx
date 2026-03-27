@@ -64,8 +64,8 @@ export function BottomNav({
   ];
 
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-40" aria-label="Navigation principale mobile">
-      <div className="mx-auto max-w-4xl bg-surface/95 backdrop-blur-xl border-t border-border shadow-e4">
+    <nav className="fixed bottom-0 inset-x-0 z-50" aria-label="Navigation principale mobile">
+      <div className="mx-auto max-w-4xl bg-surface border-t border-border shadow-e4">
         <div className="grid grid-cols-4 gap-1 px-2 py-2">
           {items.map((t) => {
             const is = active === t.id;

@@ -26,6 +26,7 @@ type ToolMeta = {
   subtitle: string;
   icon: ReactNode;
   section: 'tools';
+  category: 'Calculs' | 'Réanimation' | 'Scores';
 };
 
 const TOOLS: ToolMeta[] = [
@@ -35,6 +36,7 @@ const TOOLS: ToolMeta[] = [
     subtitle: 'Dose → volume à prélever',
     icon: <Calculator className="h-7 w-7" />,
     section: 'tools',
+    category: 'Calculs',
   },
   {
     id: 'perfusion',
@@ -42,6 +44,7 @@ const TOOLS: ToolMeta[] = [
     subtitle: 'mL/h, gtt/min, heure de fin',
     icon: <ClipboardList className="h-7 w-7" />,
     section: 'tools',
+    category: 'Calculs',
   },
   {
     id: 'gazometrie',
@@ -49,6 +52,7 @@ const TOOLS: ToolMeta[] = [
     subtitle: 'Interprétation ABG rapide',
     icon: <Activity className="h-7 w-7" />,
     section: 'tools',
+    category: 'Réanimation',
   },
   {
     id: 'patient',
@@ -56,6 +60,7 @@ const TOOLS: ToolMeta[] = [
     subtitle: 'CrCl, IMC',
     icon: <UserRound className="h-7 w-7" />,
     section: 'tools',
+    category: 'Scores',
   },
   {
     id: 'bio',
@@ -63,12 +68,14 @@ const TOOLS: ToolMeta[] = [
     subtitle: 'Référence rapide isolée',
     icon: <FlaskConical className="h-7 w-7" />,
     section: 'tools',
+    category: 'Scores',
   },
 ];
 
 export default function NurseToolkitApp() {
   const [section, setSection] = useState<SectionKey>('home');
   const [activeTool, setActiveTool] = useState<ToolId | null>(null);
+  const [search, setSearch] = useState('');
   const [serviceId, setServiceId] = useState<ServicePresetId>('polyvalent');
   const [dark, setDark] = useState<boolean>(() => {
     try {
@@ -129,6 +136,26 @@ export default function NurseToolkitApp() {
     </div>
   );
 
+  const filteredTools = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return TOOLS;
+    return TOOLS.filter(
+      (t) =>
+        t.title.toLowerCase().includes(q) ||
+        t.subtitle.toLowerCase().includes(q) ||
+        t.category.toLowerCase().includes(q)
+    );
+  }, [search]);
+
+  const toolsByCategory = useMemo(() => {
+    const groups: Record<string, ToolMeta[]> = {};
+    for (const t of filteredTools) {
+      if (!groups[t.category]) groups[t.category] = [];
+      groups[t.category].push(t);
+    }
+    return groups;
+  }, [filteredTools]);
+
   return (
     <div className={dark ? 'dark' : ''}>
       <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 font-sans">
@@ -150,27 +177,78 @@ export default function NurseToolkitApp() {
               transition={transition}
             >
               {activeTool ? (
-                <section className="rounded-3xl border border-border bg-card shadow-e4 p-4 sm:p-6">
+                <section className="rounded-3xl border border-border bg-card shadow-e4 p-4 sm:p-6 pb-24">
                   {renderTool()}
                 </section>
               ) : section === 'home' ? (
-                <section className="space-y-4">
+                <section className="space-y-4 pb-24">
                   <p className="text-sm text-muted">
                     Accès rapide: touchez une carte pour ouvrir une vue isolée, sans défilement infini.
                   </p>
+                  <div className="rounded-2xl border border-border bg-card p-4">
+                    <div className="text-xs uppercase tracking-wider text-muted">Mémo de garde</div>
+                    <div className="mt-1 text-sm text-slate-900 dark:text-slate-100">
+                      Vérifier identité patient, allergie, dose, voie, horaire.
+                    </div>
+                  </div>
+                  <div className="rounded-2xl border border-border bg-card p-4">
+                    <div className="text-xs uppercase tracking-wider text-muted mb-2">Outils récents</div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {TOOLS.slice(0, 3).map((tool) => (
+                        <button
+                          key={`recent-${tool.id}`}
+                          type="button"
+                          onClick={() => setActiveTool(tool.id)}
+                          className="rounded-xl border border-border bg-surface px-3 py-2 text-left text-sm hover:bg-card"
+                        >
+                          {tool.title}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   {toolGrid}
                 </section>
               ) : section === 'tools' ? (
-                <section className="space-y-4">
-                  <p className="text-sm text-muted">Choisissez un outil clinique dédié.</p>
-                  {toolGrid}
+                <section className="space-y-4 pb-24">
+                  <p className="text-sm text-muted">Recherche rapide + outils groupés par catégorie.</p>
+                  <div className="rounded-2xl border border-border bg-card p-3">
+                    <input
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="Rechercher un outil…"
+                      className="w-full rounded-xl border border-border bg-surface px-3 py-3 text-sm"
+                    />
+                  </div>
+                  {Object.entries(toolsByCategory).map(([category, list]) => (
+                    <section key={category} className="space-y-2">
+                      <h3 className="text-sm font-semibold uppercase tracking-wide text-muted">{category}</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {list.map((tool) => (
+                          <button
+                            key={tool.id}
+                            type="button"
+                            onClick={() => setActiveTool(tool.id)}
+                            className="text-left rounded-2xl border border-border bg-card p-4 shadow-e2 hover:shadow-e4 transition focus:outline-none focus:ring-2 focus:ring-ring"
+                          >
+                            <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-surface text-primary">
+                              {tool.icon}
+                            </div>
+                            <h4 className="text-base font-semibold text-slate-900 dark:text-slate-100 leading-tight">
+                              {tool.title}
+                            </h4>
+                            <p className="mt-1 text-xs text-muted leading-snug">{tool.subtitle}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </section>
+                  ))}
                 </section>
               ) : section === 'memos' ? (
-                <section className="rounded-3xl border border-border bg-card shadow-e4 p-4 sm:p-6">
+                <section className="rounded-3xl border border-border bg-card shadow-e4 p-4 sm:p-6 pb-24">
                   <NotesTab />
                 </section>
               ) : (
-                <section className="space-y-4 rounded-3xl border border-border bg-card shadow-e4 p-4 sm:p-6">
+                <section className="space-y-4 rounded-3xl border border-border bg-card shadow-e4 p-4 sm:p-6 pb-24">
                   <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Protocole local actif</h2>
                   <p className="text-sm text-muted">
                     Les presets service sont gérés ici et injectés automatiquement dans les outils Dose et Perfusion.
