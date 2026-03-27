@@ -1,10 +1,10 @@
 // File: src/App.tsx
 // Rôle: point d'entrée visuel, gestion d'état d'onglet, layout général (design modernisé et épuré)
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Header, BottomNav } from './Navigation';
-import { Greeting, Tabs } from './Home';
+import { Greeting } from './Home';
 import { TabContent } from './TabsRouter';
 import { fadeInUp } from './ui/motion/presets';
 import { transition } from './ui/motion/transition';
@@ -16,9 +16,26 @@ export type TabKey = 'calculs' | 'gaz' | 'patient' | 'notes' | 'apropos';
 export default function NurseToolkitApp() {
   const [tab, setTab] = useState<TabKey>('gaz');
   const [weather, setWeather] = useState<Weather | null>(null);
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'dark') return true;
+      if (saved === 'light') return false;
+    } catch {
+      // ignore storage errors
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
 
   const prefersReduced = useReducedMotion();
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('theme', dark ? 'dark' : 'light');
+    } catch {
+      // ignore storage errors
+    }
+  }, [dark]);
 
   return (
     <div className={dark ? 'dark' : ''}>
@@ -38,8 +55,7 @@ export default function NurseToolkitApp() {
           transition={transition}
         >
           <Greeting weather={weather} />
-          <WeatherWidget onWeather={setWeather} showSprout />
-          <Tabs active={tab} onChange={setTab} />
+          <WeatherWidget onWeather={setWeather} showSprout={false} />
           <AnimatePresence mode="wait">
             <motion.div
               key={tab}
@@ -64,9 +80,9 @@ export default function NurseToolkitApp() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
               <div>
                 ⚠️ Cet outil aide uniquement aux calculs infirmiers — il ne
-                remplace pas l'avis médical.
+                remplace pas l’avis médical.
               </div>
-              <div>© {new Date().getFullYear()} — Fait avec ❤️ pour Chloé</div>
+              <div>© {new Date().getFullYear()} NurseTools</div>
             </div>
           </div>
         </footer>

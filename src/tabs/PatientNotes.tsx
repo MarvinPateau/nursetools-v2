@@ -150,7 +150,11 @@ function NoteBlock() {
 
   const saveNotes = (next: string[]) => {
     setNotes(next);
-    localStorage.setItem('notes', JSON.stringify(next));
+    try {
+      localStorage.setItem('notes', JSON.stringify(next));
+    } catch {
+      // ignore storage errors
+    }
   };
 
   const addNote = () => {
@@ -160,6 +164,14 @@ function NoteBlock() {
     setInput('');
   };
 
+  const removeNote = (index: number) => {
+    saveNotes(notes.filter((_, i) => i !== index));
+  };
+
+  const clearNotes = () => {
+    saveNotes([]);
+  };
+
   return (
     <Card
       title="Bloc-notes rapide"
@@ -167,7 +179,8 @@ function NoteBlock() {
     >
       <textarea
         className="w-full rounded-xl border border-border bg-surface p-3 focus:outline-none focus:ring-2 focus:ring-ring"
-        placeholder="Écrire une note et appuyer sur Entrée"
+        placeholder="Écrire une note…"
+        aria-label="Saisir une note"
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => {
@@ -177,14 +190,40 @@ function NoteBlock() {
           }
         }}
       />
+      <div className="mt-2 flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={addNote}
+          className="px-3 py-2 rounded-xl border border-border bg-surface text-sm hover:bg-card"
+        >
+          Ajouter la note
+        </button>
+        {notes.length > 0 && (
+          <button
+            type="button"
+            onClick={clearNotes}
+            className="px-3 py-2 rounded-xl border border-border bg-surface text-sm hover:bg-card"
+          >
+            Effacer toutes les notes
+          </button>
+        )}
+      </div>
       {notes.length > 0 && (
         <ul className="mt-3 space-y-2">
           {notes.map((n, i) => (
             <li
               key={i}
-              className="rounded-lg border border-border bg-card/70 px-3 py-2 text-sm"
+              className="rounded-lg border border-border bg-card/70 px-3 py-2 text-sm flex items-start justify-between gap-2"
             >
-              {n}
+              <span>{n}</span>
+              <button
+                type="button"
+                onClick={() => removeNote(i)}
+                aria-label={`Supprimer la note ${i + 1}`}
+                className="text-xs rounded-md border border-border px-2 py-1 hover:bg-surface"
+              >
+                Supprimer
+              </button>
             </li>
           ))}
         </ul>
