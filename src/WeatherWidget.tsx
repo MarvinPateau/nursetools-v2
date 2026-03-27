@@ -71,17 +71,18 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather, showSprout 
   const prefersReduced = useReducedMotion();
 
   useEffect(() => {
+    const controller = new AbortController();
     async function load() {
       const key = import.meta.env.VITE_WEATHER_API_KEY;
       if (!key) {
-        setError('Clé API manquante');
+        setError('Météo non configurée');
         onWeather?.(null);
         setLoading(false);
         return;
       }
       try {
         const url = `https://api.weatherapi.com/v1/current.json?key=${key}&q=${encodeURIComponent(city)}&lang=fr&aqi=no`;
-        const res = await fetch(url);
+        const res = await fetch(url, { signal: controller.signal });
         if (!res.ok) throw new Error('Erreur réseau');
         const json = await res.json();
         const w: Weather = {
@@ -93,6 +94,7 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather, showSprout 
         onWeather?.(w);
         setError(null);
       } catch (e) {
+        if ((e as { name?: string })?.name === 'AbortError') return;
         console.error(e);
         setError('Météo indisponible');
         onWeather?.(null);
@@ -101,6 +103,7 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather, showSprout 
       }
     }
     load();
+    return () => controller.abort();
   }, [city, onWeather]);
 
   if (loading) {
@@ -115,7 +118,9 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather, showSprout 
   if (error || !data) {
     return (
       <div className="mt-4 text-sm text-muted" role="status">
-        {error || 'Météo indisponible'}
+        {error === 'Météo non configurée'
+          ? 'Météo désactivée (clé API absente).'
+          : error || 'Météo indisponible'}
       </div>
     );
   }
