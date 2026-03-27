@@ -80,6 +80,7 @@ export function CalculsTab() {
         <InfusionRate />
         <DripRate />
       </div>
+      <BiologyNorms />
       <ServiceTools service={service} />
     </section>
   );
@@ -466,6 +467,7 @@ function InfusionRate() {
   const [volume, setVolume] = useState<number>(500);
   const [heures, setHeures] = useState<number>(2);
   const [minutes, setMinutes] = useState<number>(0);
+  const [startTime, setStartTime] = useState<string>("08:00");
 
   const mlh = useMemo(() => {
     const t = Number(heures) + Number(minutes) / 60;
@@ -473,8 +475,18 @@ function InfusionRate() {
     return safeDiv(Number(volume), t);
   }, [volume, heures, minutes]);
 
+  const perfEnd = useMemo(() => {
+    const [hh, mm] = startTime.split(":").map((x) => Number(x));
+    if (!Number.isFinite(hh) || !Number.isFinite(mm)) return "—";
+    const d = new Date();
+    d.setHours(hh, mm, 0, 0);
+    const totalMin = Math.max(0, Number(heures) * 60 + Number(minutes));
+    d.setMinutes(d.getMinutes() + totalMin);
+    return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  }, [startTime, heures, minutes]);
+
   return (
-    <Card title="Débit d'infusion" subtitle="Calcul du mL/h">
+    <Card title="Débit d'infusion" subtitle="Calcul du mL/h + heure de fin">
       <Field
         label="Volume à perfuser"
         value={volume}
@@ -496,6 +508,16 @@ function InfusionRate() {
         />
       </div>
       <Result>{`${round(mlh)} mL/h`}</Result>
+      <label className="block mt-3">
+        <div className="text-sm text-muted mb-1">Heure de début perfusion</div>
+        <input
+          className="w-full rounded-md border border-border bg-surface px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-ring"
+          type="time"
+          value={startTime}
+          onChange={(e) => setStartTime(e.target.value)}
+        />
+      </label>
+      <Result tone="info">Heure de fin estimée: {perfEnd}</Result>
     </Card>
   );
 }
@@ -531,6 +553,35 @@ function DripRate() {
         suffix="gtt/mL"
       />
       <Result>{`${Math.round(gtt)} gtt/min`}</Result>
+    </Card>
+  );
+}
+
+function BiologyNorms() {
+  const items = [
+    { label: "pH artériel", range: "7.35 – 7.45" },
+    { label: "PaCO₂", range: "35 – 45 mmHg" },
+    { label: "HCO₃⁻", range: "22 – 26 mEq/L" },
+    { label: "Lactate", range: "≤ 2 mmol/L" },
+    { label: "Na⁺", range: "135 – 145 mmol/L" },
+    { label: "K⁺", range: "3.5 – 5.0 mmol/L" },
+    { label: "Créatinine", range: "≈ 45 – 105 µmol/L (adulte)" },
+    { label: "Glycémie à jeun", range: "0.70 – 1.10 g/L" },
+  ];
+
+  return (
+    <Card title="Normes biologie (repères rapides)" subtitle="Valeurs usuelles adultes — à adapter au protocole local">
+      <ul className="grid sm:grid-cols-2 gap-2 text-sm">
+        {items.map((item) => (
+          <li key={item.label} className="rounded-lg border border-border bg-surface px-3 py-2">
+            <div className="font-medium">{item.label}</div>
+            <div className="text-muted">{item.range}</div>
+          </li>
+        ))}
+      </ul>
+      <div className="text-xs text-muted mt-3">
+        Ces repères ne remplacent pas l’interprétation clinique, l’âge, le contexte et les référentiels locaux.
+      </div>
     </Card>
   );
 }
