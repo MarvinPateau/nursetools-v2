@@ -1,4 +1,4 @@
-import { ArrowLeft, Calculator, Home, Moon, Settings, Stethoscope, Sun } from 'lucide-react';
+import { ArrowLeft, Grid2x2, Home, Moon, NotebookPen, Settings, Stethoscope, Sun } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { SectionKey } from './App';
 
@@ -58,8 +58,8 @@ export function BottomNav({
 }) {
   const items: { id: SectionKey; icon: ReactNode; label: string }[] = [
     { id: 'home', icon: <Home className="h-4 w-4" />, label: 'Accueil' },
-    { id: 'calculs', icon: <Calculator className="h-4 w-4" />, label: 'Calculs' },
-    { id: 'scores', icon: <Stethoscope className="h-4 w-4" />, label: 'Scores' },
+    { id: 'tools', icon: <Grid2x2 className="h-4 w-4" />, label: 'Outils' },
+    { id: 'memos', icon: <NotebookPen className="h-4 w-4" />, label: 'Mémos' },
     { id: 'settings', icon: <Settings className="h-4 w-4" />, label: 'Réglages' },
   ];
 

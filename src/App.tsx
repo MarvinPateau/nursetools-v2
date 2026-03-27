@@ -1,69 +1,76 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Calculator, Home, Settings, Stethoscope } from 'lucide-react';
+import { Calculator, FileText, FlaskConical, Gauge, Stethoscope } from 'lucide-react';
 import { Header, BottomNav } from './Navigation';
-import { CalculsTab } from './tabs/Calculs';
 import { GazometrieTab } from './tabs/Gazometrie';
 import { PatientTab, NotesTab } from './tabs/PatientNotes';
+import {
+  BiologyReferenceTool,
+  DoseTool,
+  InfusionTool,
+  ServicePresetPanel,
+} from './tools/ClinicalTools';
+import { SERVICE_PRESETS, type ServicePresetId } from './tools/presets';
 import { transition } from './ui/motion/transition';
 import { fadeInUp } from './ui/motion/presets';
 import { useReducedMotion } from './ui/motion/ReducedMotion';
 
-export type SectionKey = 'home' | 'calculs' | 'scores' | 'settings';
+export type SectionKey = 'home' | 'tools' | 'memos' | 'settings';
 export type TabKey = 'calculs' | 'gaz' | 'patient' | 'notes' | 'apropos';
 
-type ToolId = 'dose' | 'infusion' | 'gazo' | 'patient' | 'notes';
+type ToolId = 'dose' | 'perfusion' | 'bio' | 'gazo' | 'patient';
 
 type ToolMeta = {
   id: ToolId;
   title: string;
   subtitle: string;
   icon: ReactNode;
-  section: Exclude<SectionKey, 'home'>;
+  section: 'tools' | 'memos';
 };
 
 const TOOLS: ToolMeta[] = [
   {
     id: 'dose',
-    title: 'Calculs médicamenteux',
-    subtitle: 'Dose, dilution, débits, presets service',
+    title: 'Calcul de dose',
+    subtitle: 'Dose totale + volume à prélever',
     icon: <Calculator className="h-7 w-7" />,
-    section: 'calculs',
+    section: 'tools',
   },
   {
-    id: 'infusion',
+    id: 'perfusion',
     title: 'Perfusion / Surveillance',
-    subtitle: 'mL/h, gouttes/min, heure de fin',
-    icon: <Stethoscope className="h-7 w-7" />,
-    section: 'calculs',
+    subtitle: 'mL/h, gtt/min, heure de fin',
+    icon: <Gauge className="h-7 w-7" />,
+    section: 'tools',
+  },
+  {
+    id: 'bio',
+    title: 'Normes biologie',
+    subtitle: 'Références rapides dédiées',
+    icon: <FlaskConical className="h-7 w-7" />,
+    section: 'tools',
   },
   {
     id: 'gazo',
     title: 'Gazométrie',
-    subtitle: 'ABG, P/F, AG, lactate',
+    subtitle: 'Interprétation ABG',
     icon: <Stethoscope className="h-7 w-7" />,
-    section: 'scores',
+    section: 'tools',
   },
   {
     id: 'patient',
     title: 'Repères patient',
-    subtitle: 'CrCl, IMC',
-    icon: <Home className="h-7 w-7" />,
-    section: 'scores',
-  },
-  {
-    id: 'notes',
-    title: 'Notes rapides',
-    subtitle: 'Mémo local de garde',
-    icon: <Settings className="h-7 w-7" />,
-    section: 'settings',
+    subtitle: 'CrCl / IMC',
+    icon: <FileText className="h-7 w-7" />,
+    section: 'tools',
   },
 ];
 
 export default function NurseToolkitApp() {
   const [section, setSection] = useState<SectionKey>('home');
   const [activeTool, setActiveTool] = useState<ToolId | null>(null);
+  const [preset, setPreset] = useState<ServicePresetId>('polyvalent');
   const [dark, setDark] = useState<boolean>(() => {
     try {
       const saved = localStorage.getItem('theme');
@@ -80,31 +87,74 @@ export default function NurseToolkitApp() {
   useEffect(() => {
     try {
       localStorage.setItem('theme', dark ? 'dark' : 'light');
+      localStorage.setItem('servicePreset', preset);
     } catch {
       // ignore storage errors
     }
-  }, [dark]);
+  }, [dark, preset]);
+
+  useEffect(() => {
+    try {
+      const savedPreset = localStorage.getItem('servicePreset') as ServicePresetId | null;
+      if (savedPreset && SERVICE_PRESETS[savedPreset]) setPreset(savedPreset);
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
 
   const currentTitle = useMemo(() => {
     if (activeTool) return TOOLS.find((t) => t.id === activeTool)?.title ?? 'Outil';
-    if (section === 'home') return 'Tableau de bord';
-    if (section === 'calculs') return 'Calculs';
-    if (section === 'scores') return 'Scores & bilans';
+    if (section === 'home') return 'Accueil';
+    if (section === 'tools') return 'Outils';
+    if (section === 'memos') return 'Mémos';
     return 'Réglages';
   }, [section, activeTool]);
 
   const visibleTools = useMemo(() => {
     if (section === 'home') return TOOLS;
-    if (section === 'settings') return TOOLS.filter((t) => t.section === 'settings');
-    return TOOLS.filter((t) => t.section === section);
+    if (section === 'tools') return TOOLS.filter((t) => t.section === 'tools');
+    return [];
   }, [section]);
 
   const renderTool = () => {
-    if (activeTool === 'dose' || activeTool === 'infusion') return <CalculsTab />;
+    if (activeTool === 'dose') return <DoseTool preset={preset} />;
+    if (activeTool === 'perfusion') return <InfusionTool preset={preset} />;
+    if (activeTool === 'bio') return <BiologyReferenceTool />;
     if (activeTool === 'gazo') return <GazometrieTab />;
     if (activeTool === 'patient') return <PatientTab />;
-    if (activeTool === 'notes') return <NotesTab />;
     return null;
+  };
+
+  const renderSection = () => {
+    if (section === 'memos') return <NotesTab />;
+    if (section === 'settings') return <ServicePresetPanel preset={preset} onChange={setPreset} />;
+
+    return (
+      <section>
+        <p className="text-sm text-muted mb-4">
+          Accès rapide aux vues isolées. Chaque carte ouvre un outil dédié plein écran, sans scroll parasite.
+        </p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {visibleTools.map((tool) => (
+            <button
+              key={tool.id}
+              type="button"
+              onClick={() => {
+                setSection('tools');
+                setActiveTool(tool.id);
+              }}
+              className="text-left rounded-2xl border border-border bg-card p-4 shadow-e2 hover:shadow-e4 transition focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-surface text-primary">
+                {tool.icon}
+              </div>
+              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 leading-tight">{tool.title}</h3>
+              <p className="mt-1 text-xs text-muted leading-snug">{tool.subtitle}</p>
+            </button>
+          ))}
+        </div>
+      </section>
+    );
   };
 
   return (
@@ -128,33 +178,9 @@ export default function NurseToolkitApp() {
               transition={transition}
             >
               {activeTool ? (
-                <section className="rounded-3xl border border-border bg-card shadow-e4 p-4 sm:p-6">
-                  {renderTool()}
-                </section>
+                <section className="rounded-3xl border border-border bg-card shadow-e4 p-4 sm:p-6">{renderTool()}</section>
               ) : (
-                <section>
-                  <p className="text-sm text-muted mb-4">
-                    Choisissez un outil en un geste. Interface optimisée pour usage rapide en situation de fatigue.
-                  </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {visibleTools.map((tool) => (
-                      <button
-                        key={tool.id}
-                        type="button"
-                        onClick={() => setActiveTool(tool.id)}
-                        className="text-left rounded-2xl border border-border bg-card p-4 shadow-e2 hover:shadow-e4 transition focus:outline-none focus:ring-2 focus:ring-ring"
-                      >
-                        <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-surface text-primary">
-                          {tool.icon}
-                        </div>
-                        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 leading-tight">
-                          {tool.title}
-                        </h3>
-                        <p className="mt-1 text-xs text-muted leading-snug">{tool.subtitle}</p>
-                      </button>
-                    ))}
-                  </div>
-                </section>
+                <section className="rounded-3xl border border-border bg-card shadow-e3 p-4 sm:p-6">{renderSection()}</section>
               )}
             </motion.div>
           </AnimatePresence>
