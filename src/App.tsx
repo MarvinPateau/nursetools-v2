@@ -117,25 +117,6 @@ export default function NurseToolkitApp() {
     return null;
   };
 
-  const toolGrid = (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-      {TOOLS.map((tool) => (
-        <button
-          key={tool.id}
-          type="button"
-          onClick={() => setActiveTool(tool.id)}
-          className="text-left rounded-2xl border border-border bg-card p-4 shadow-e2 hover:shadow-e4 transition focus:outline-none focus:ring-2 focus:ring-ring"
-        >
-          <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-surface text-primary">
-            {tool.icon}
-          </div>
-          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 leading-tight">{tool.title}</h3>
-          <p className="mt-1 text-xs text-muted leading-snug">{tool.subtitle}</p>
-        </button>
-      ))}
-    </div>
-  );
-
   const filteredTools = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return TOOLS;
@@ -182,31 +163,38 @@ export default function NurseToolkitApp() {
                 </section>
               ) : section === 'home' ? (
                 <section className="space-y-4 pb-24">
-                  <p className="text-sm text-muted">
-                    Accès rapide: touchez une carte pour ouvrir une vue isolée, sans défilement infini.
-                  </p>
-                  <div className="rounded-2xl border border-border bg-card p-4">
-                    <div className="text-xs uppercase tracking-wider text-muted">Mémo de garde</div>
-                    <div className="mt-1 text-sm text-slate-900 dark:text-slate-100">
-                      Vérifier identité patient, allergie, dose, voie, horaire.
+                  <div className="rounded-2xl border border-border bg-card p-5">
+                    <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Nurse&apos;s Toolbox</h2>
+                    <p className="text-sm text-muted mt-1">
+                      Navigation simple: sélectionnez une section principale depuis cette page.
+                    </p>
+                    <div className="mt-4 grid gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setSection('tools')}
+                        className="rounded-xl border border-border bg-surface px-4 py-3 text-left hover:bg-card"
+                      >
+                        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">Ouvrir les outils cliniques</div>
+                        <div className="text-xs text-muted">Calcul de dose, perfusion, gazométrie, normes biologie…</div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSection('memos')}
+                        className="rounded-xl border border-border bg-surface px-4 py-3 text-left hover:bg-card"
+                      >
+                        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">Ouvrir les mémos</div>
+                        <div className="text-xs text-muted">Notes rapides de garde.</div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSection('settings')}
+                        className="rounded-xl border border-border bg-surface px-4 py-3 text-left hover:bg-card"
+                      >
+                        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">Configurer le protocole local</div>
+                        <div className="text-xs text-muted">Presets service injectés automatiquement dans les calculs.</div>
+                      </button>
                     </div>
                   </div>
-                  <div className="rounded-2xl border border-border bg-card p-4">
-                    <div className="text-xs uppercase tracking-wider text-muted mb-2">Outils récents</div>
-                    <div className="grid grid-cols-2 gap-2">
-                      {TOOLS.slice(0, 3).map((tool) => (
-                        <button
-                          key={`recent-${tool.id}`}
-                          type="button"
-                          onClick={() => setActiveTool(tool.id)}
-                          className="rounded-xl border border-border bg-surface px-3 py-2 text-left text-sm hover:bg-card"
-                        >
-                          {tool.title}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  {toolGrid}
                 </section>
               ) : section === 'tools' ? (
                 <section className="space-y-4 pb-24">
