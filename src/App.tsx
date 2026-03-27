@@ -41,8 +41,6 @@ export default function NurseToolkitApp() {
     <div className={dark ? 'dark' : ''}>
       <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 font-sans">
         <Header
-          onChangeTab={setTab}
-          active={tab}
           dark={dark}
           onToggleDark={() => setDark((d) => !d)}
         />
@@ -55,8 +53,8 @@ export default function NurseToolkitApp() {
           transition={transition}
         >
           <Greeting weather={weather} />
-          <WeatherWidget onWeather={setWeather} showSprout />
           <Tabs active={tab} onChange={setTab} />
+          <WeatherWidget onWeather={setWeather} />
           <AnimatePresence mode="wait">
             <motion.div
               key={tab}

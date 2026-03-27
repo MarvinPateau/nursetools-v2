@@ -146,7 +146,7 @@ export function Tabs({
     ].join(' ');
 
   return (
-    <div className="mt-5 grid grid-cols-2 sm:grid-cols-5 gap-2" role="tablist">
+    <div className="mt-5 hidden sm:grid sm:grid-cols-5 gap-2" role="tablist">
       {items.map((t) => {
         const is = active === t.id;
         return (

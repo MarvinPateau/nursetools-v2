@@ -109,40 +109,28 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather, showSprout 
   if (loading) {
     return (
       <div
-        className={`mt-4 h-24 w-full rounded-2xl bg-card border border-border ${prefersReduced ? '' : 'animate-pulse'}`}
+        className={`mt-3 h-10 w-full rounded-xl bg-card border border-border ${prefersReduced ? '' : 'animate-pulse'}`}
         aria-hidden
       />
     );
   }
 
   if (error || !data) {
-    return (
-      <div className="mt-4 text-sm text-muted" role="status">
-        {error === 'Météo non configurée'
-          ? 'Météo désactivée (clé API absente).'
-          : error || 'Météo indisponible'}
-      </div>
-    );
+    return null;
   }
 
   const cond = data.condition.toLowerCase();
   const mood = cond.includes('pluie') ? 'rainy' : 'happy';
-  const message = cond.includes('pluie')
-    ? 'La nature boit la pluie.'
-    : 'Belle journée verdoyante.';
-
   return (
-    <div className="mt-4 flex items-center justify-between rounded-2xl bg-card p-4 shadow-e2 border border-border">
-      <div className="flex items-center gap-3">
-        <span aria-hidden className="text-4xl">
+    <div className="mt-3 flex items-center justify-between rounded-xl border border-border bg-surface/70 px-3 py-2 text-sm text-muted">
+      <div className="flex min-w-0 items-center gap-2">
+        <span aria-hidden className="text-base">
           {iconFor(data.condition)}
         </span>
-        <div>
-          <div className="text-2xl font-bold text-primary">
-            {Math.round(data.temp)}°C
-          </div>
-          <div className="text-sm text-muted">{data.condition}</div>
-          <div className="text-xs text-muted/80">{message}</div>
+        <div className="truncate">
+          <span className="font-semibold text-primary">{Math.round(data.temp)}°C</span>
+          <span className="mx-2 opacity-40">•</span>
+          <span className="truncate">{data.condition}</span>
         </div>
       </div>
       {showSprout && <span className="ml-2"><Sprout mood={mood} /></span>}

@@ -28,13 +28,9 @@ function Moon() {
 }
 
 export function Header({
-  onChangeTab,
-  active,
   dark,
   onToggleDark,
 }: {
-  onChangeTab: (t: TabKey) => void;
-  active: TabKey;
   dark: boolean;
   onToggleDark: () => void;
 }) {
@@ -47,55 +43,16 @@ export function Header({
             <span>NurseTools</span>
           </span>
         </h1>
-        <div className="flex items-center gap-2">
-          <nav
-            className="hidden sm:flex gap-2 text-sm"
-            aria-label="Navigation principale"
-          >
-            <TopLink id="calculs" label="Calculs" active={active} onClick={onChangeTab} />
-            <TopLink id="gaz" label="Gazométrie" active={active} onClick={onChangeTab} />
-            <TopLink id="patient" label="Patient" active={active} onClick={onChangeTab} />
-            <TopLink id="notes" label="Notes" active={active} onClick={onChangeTab} />
-            <TopLink id="apropos" label="À propos" active={active} onClick={onChangeTab} />
-          </nav>
-          <button
-            onClick={onToggleDark}
-            aria-label="Changer de thème"
-            className="p-2 rounded-full hover:bg-surface focus:outline-none focus:ring-2 focus:ring-ring"
-            aria-pressed={dark}
-          >
-            {dark ? <Sun /> : <Moon />}
-          </button>
-        </div>
+        <button
+          onClick={onToggleDark}
+          aria-label="Changer de thème"
+          className="p-2 rounded-full hover:bg-surface focus:outline-none focus:ring-2 focus:ring-ring"
+          aria-pressed={dark}
+        >
+          {dark ? <Sun /> : <Moon />}
+        </button>
       </div>
     </header>
-  );
-}
-
-export function TopLink({
-  id,
-  label,
-  active,
-  onClick,
-}: {
-  id: TabKey;
-  label: string;
-  active: TabKey;
-  onClick: (t: TabKey) => void;
-}) {
-  const is = active === id;
-  return (
-    <button
-      onClick={() => onClick(id)}
-      className={`px-3 py-1.5 rounded-full border transform-gpu transition-transform duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-ring hover:scale-105 active:scale-95 ${
-        is
-          ? 'bg-gradient-to-r from-primary to-mint text-primary-foreground border-transparent shadow-e2'
-          : 'bg-surface hover:bg-surface/80 text-muted border-border'
-      }`}
-      aria-current={is ? 'page' : undefined}
-    >
-      {label}
-    </button>
   );
 }
 
