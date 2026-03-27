@@ -53,13 +53,31 @@ export default function NurseToolkitApp() {
         />
 
         <motion.main
-          className="mx-auto w-full max-w-3xl px-4 pb-28 sm:pb-24"
+          className="mx-auto w-full max-w-4xl px-4 pb-28 sm:pb-24"
           initial="hidden"
           animate="visible"
           variants={prefersReduced ? undefined : fadeInUp}
           transition={transition}
         >
           <Greeting weather={weather} />
+          <section className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
+            <div className="rounded-2xl border border-border bg-card px-3 py-2 text-left">
+              <div className="text-[11px] uppercase tracking-wider text-muted">Usage</div>
+              <div className="text-lg font-semibold tabular-nums">1 main</div>
+            </div>
+            <div className="rounded-2xl border border-border bg-card px-3 py-2 text-left">
+              <div className="text-[11px] uppercase tracking-wider text-muted">Contexte</div>
+              <div className="text-lg font-semibold tabular-nums">Urgence</div>
+            </div>
+            <div className="rounded-2xl border border-border bg-card px-3 py-2 text-left">
+              <div className="text-[11px] uppercase tracking-wider text-muted">Priorité</div>
+              <div className="text-lg font-semibold tabular-nums">Lisibilité</div>
+            </div>
+            <div className="rounded-2xl border border-border bg-card px-3 py-2 text-left">
+              <div className="text-[11px] uppercase tracking-wider text-muted">Contrôle</div>
+              <div className="text-lg font-semibold tabular-nums">Double-check</div>
+            </div>
+          </section>
           <Tabs active={tab} onChange={setTab} />
           <ColorGuide active={tab} />
           <WeatherWidget onWeather={setWeather} />
@@ -73,7 +91,7 @@ export default function NurseToolkitApp() {
               variants={prefersReduced ? undefined : fadeInUp}
               transition={transition}
             >
-              <div className={`rounded-2xl bg-card shadow-e3 p-6 border border-border ${domainFrameClass[tab]}`}>
+              <div className={`rounded-3xl bg-card shadow-e3 p-5 sm:p-6 border border-border ${domainFrameClass[tab]}`}>
                 <TabContent active={tab} />
               </div>
             </motion.div>
@@ -82,8 +100,8 @@ export default function NurseToolkitApp() {
 
         <BottomNav active={tab} onChange={setTab} />
 
-        <footer className="mt-10 border-t border-border bg-surface/70 backdrop-blur-md">
-          <div className="mx-auto w-full max-w-3xl px-4 py-6 text-sm text-muted">
+        <footer className="mt-10 border-t border-border bg-surface/80 backdrop-blur-xl">
+          <div className="mx-auto w-full max-w-4xl px-4 py-6 text-sm text-muted">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
               <div>
                 ⚠️ Cet outil aide uniquement aux calculs infirmiers — il ne

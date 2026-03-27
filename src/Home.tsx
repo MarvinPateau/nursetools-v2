@@ -2,7 +2,9 @@
 // Header d’accueil sobre + barre d’onglets (utilise la météo passée par App)
 
 import { useMemo } from 'react';
+import type { ReactNode } from 'react';
 import type { TabKey } from './App';
+import { Activity, Calculator, Info, NotebookPen, UserRound } from 'lucide-react';
 
 type WeatherLite = { location: string; temp: number; condition: string } | null;
 
@@ -102,14 +104,14 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
       </div>
 
       {/* Titre sobre avec gradient léger */}
-      <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold leading-tight font-display">
+      <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold leading-tight tracking-tight">
         <span className="bg-gradient-to-r from-moss via-primary to-mint bg-clip-text text-transparent">
           {dynamicTitle}
         </span>
       </h2>
 
       {/* Sous-texte concis */}
-      <p className="mt-2 text-muted">
+      <p className="mt-2 text-muted text-sm sm:text-base">
         Calculs rapides, repères utiles et outils patients.
         <span className="hidden sm:inline">
           {' '}
@@ -128,18 +130,18 @@ export function Tabs({
   active: TabKey;
   onChange: (t: TabKey) => void;
 }) {
-  const items: { id: TabKey; label: string; icon: string; domainClass: string }[] = [
-    { id: 'calculs', icon: '💊', label: 'Calculs', domainClass: 'domain-calculs' },
-    { id: 'gaz', icon: '🩸', label: 'Gazométrie', domainClass: 'domain-gaz' },
-    { id: 'patient', icon: '🧪', label: 'Patient', domainClass: 'domain-patient' },
-    { id: 'notes', icon: '🗒️', label: 'Notes', domainClass: 'domain-notes' },
-    { id: 'apropos', icon: 'ℹ️', label: 'À propos', domainClass: 'domain-apropos' },
+  const items: { id: TabKey; label: string; icon: ReactNode; domainClass: string }[] = [
+    { id: 'calculs', icon: <Calculator className="h-4 w-4" />, label: 'Calculs', domainClass: 'domain-calculs' },
+    { id: 'gaz', icon: <Activity className="h-4 w-4" />, label: 'Gazométrie', domainClass: 'domain-gaz' },
+    { id: 'patient', icon: <UserRound className="h-4 w-4" />, label: 'Patient', domainClass: 'domain-patient' },
+    { id: 'notes', icon: <NotebookPen className="h-4 w-4" />, label: 'Notes', domainClass: 'domain-notes' },
+    { id: 'apropos', icon: <Info className="h-4 w-4" />, label: 'À propos', domainClass: 'domain-apropos' },
   ];
 
   const cls = (is: boolean, domainClass: string) =>
     [
       'group rounded-2xl border transition shadow-sm focus:outline-none focus:ring-2 focus:ring-ring',
-      'flex items-center justify-center gap-2 px-3 py-2 text-sm',
+      'flex items-center justify-center gap-2 px-3 py-3 text-sm font-medium',
       is
         ? `${domainClass} text-slate-950 border-transparent shadow-e4`
         : 'bg-surface hover:bg-surface/80 text-muted border-border',
@@ -160,7 +162,7 @@ export function Tabs({
             <span className="text-base leading-none" aria-hidden>
               {t.icon}
             </span>
-            <span className="font-medium">{t.label}</span>
+            <span>{t.label}</span>
             {is && (
               <span
                 className="ml-1 inline-flex h-1.5 w-1.5 rounded-full bg-white/80"
