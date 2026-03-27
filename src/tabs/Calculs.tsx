@@ -5,16 +5,123 @@ import { useMemo, useState } from "react";
 import { Card, Field, Result } from "../ui/UI";
 import { safeDiv, round, toNum } from "../utils";
 
+type ServiceId = "polyvalent" | "urgences" | "usi" | "grandsBrules" | "pediatrie";
+
+type ServicePreset = {
+  label: string;
+  standardConcentrationMgMl: number;
+  regleTroisReferenceMgMl: number;
+  doubleCheckRules: string[];
+  tools: string[];
+};
+
+const SERVICE_PRESETS: Record<ServiceId, ServicePreset> = {
+  polyvalent: {
+    label: "Service polyvalent",
+    standardConcentrationMgMl: 10,
+    regleTroisReferenceMgMl: 250,
+    doubleCheckRules: [
+      "Double contrôle dose et unité (mg vs µg).",
+      "Vérifier poids de référence et fonction rénale.",
+    ],
+    tools: ["Dose mg/kg", "Débit perfusion", "Gouttes/min"],
+  },
+  urgences: {
+    label: "Urgences",
+    standardConcentrationMgMl: 5,
+    regleTroisReferenceMgMl: 100,
+    doubleCheckRules: [
+      "Tracer heure de préparation et heure d'administration.",
+      "Double contrôle obligatoire pour bolus/vasopresseurs.",
+    ],
+    tools: ["Bolus rapide mL/kg", "Shock index", "Règle de trois"],
+  },
+  usi: {
+    label: "USI / Réanimation",
+    standardConcentrationMgMl: 4,
+    regleTroisReferenceMgMl: 40,
+    doubleCheckRules: [
+      "Toujours valider concentration seringue sur pousse-seringue.",
+      "Double contrôle IDE/IDE pour catécholamines et sédation.",
+    ],
+    tools: ["Débit mL/h", "Dose µg/kg/min → mL/h", "Gazométrie"],
+  },
+  grandsBrules: {
+    label: "Unité grands brûlés",
+    standardConcentrationMgMl: 2,
+    regleTroisReferenceMgMl: 50,
+    doubleCheckRules: [
+      "Recalculer la surface brûlée (%) à chaque réévaluation.",
+      "Tracer bilan entrée/sortie et objectifs de diurèse.",
+    ],
+    tools: ["Parkland 24h", "Surface brûlée (règle des 9)", "Débit perfusion"],
+  },
+  pediatrie: {
+    label: "Pédiatrie",
+    standardConcentrationMgMl: 1,
+    regleTroisReferenceMgMl: 10,
+    doubleCheckRules: [
+      "Toujours calculer sur poids actualisé du jour.",
+      "Double contrôle systématique avant administration IV.",
+    ],
+    tools: ["Dose mg/kg", "Bolus mL/kg", "Limites max pédiatriques"],
+  },
+};
+
 export function CalculsTab() {
+  const [service, setService] = useState<ServiceId>("polyvalent");
+
   return (
     <section className="mt-6 space-y-6">
+      <ServiceSelector service={service} onServiceChange={setService} />
       <QuickPanel />
-      <DoseCalculator />
+      <DoseCalculator service={service} />
       <div className="grid sm:grid-cols-2 gap-6">
         <InfusionRate />
         <DripRate />
       </div>
+      <ServiceTools service={service} />
     </section>
+  );
+}
+
+function ServiceSelector({
+  service,
+  onServiceChange,
+}: {
+  service: ServiceId;
+  onServiceChange: (service: ServiceId) => void;
+}) {
+  const preset = SERVICE_PRESETS[service];
+  return (
+    <Card
+      title="Protocole local / presets service"
+      subtitle="Sélectionnez un service pour charger des repères de concentration et de double contrôle"
+    >
+      <label className="text-sm text-muted">
+        Service clinique
+        <select
+          className="mt-1 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          value={service}
+          onChange={(e) => onServiceChange(e.target.value as ServiceId)}
+        >
+          <option value="polyvalent">Polyvalent</option>
+          <option value="urgences">Urgences</option>
+          <option value="usi">USI / Réanimation</option>
+          <option value="grandsBrules">Grands brûlés</option>
+          <option value="pediatrie">Pédiatrie</option>
+        </select>
+      </label>
+      <div className="mt-2 text-xs text-muted">
+        Profil actif: <b>{preset.label}</b>
+      </div>
+      <div className="mt-2 text-xs text-muted">Outils fréquents: {preset.tools.join(" • ")}</div>
+      <ul className="mt-2 space-y-1 text-xs text-muted">
+        {preset.doubleCheckRules.map((rule, i) => (
+          <li key={i}>• {rule}</li>
+        ))}
+      </ul>
+    </Card>
   );
 }
 
@@ -50,7 +157,7 @@ function QuickPanel() {
 }
 
 type DoseMode = "mgkg" | "regle3" | "dilution";
-function DoseCalculator() {
+function DoseCalculator({ service }: { service: ServiceId }) {
   const [mode, setMode] = useState<DoseMode>("mgkg");
   const [poids, setPoids] = useState<number>(70);
   const [doseMgKg, setDoseMgKg] = useState<number>(1);
@@ -65,6 +172,13 @@ function DoseCalculator() {
   const [renal, setRenal] = useState<"normal" | "renale" | "dialyse">("normal");
   const [grossesse, setGrossesse] = useState<"non" | "oui">("non");
 
+  const selectedPreset = SERVICE_PRESETS[service];
+
+  const applyServicePreset = () => {
+    setConcentration(selectedPreset.standardConcentrationMgMl);
+    setDispo(selectedPreset.regleTroisReferenceMgMl);
+  };
+
   const safetyAlerts = useMemo(() => {
     const alerts: string[] = [];
     if (mode === "mgkg") {
@@ -73,6 +187,8 @@ function DoseCalculator() {
       if (concentration <= 0) alerts.push("Concentration invalide (doit être > 0 mg/mL).");
       if (doseMgKg > 50) alerts.push("Dose mg/kg élevée: vérifier l'unité et la prescription.");
       if (concentration > 1000) alerts.push("Concentration très élevée: confirmer la dilution.");
+      if (service === "pediatrie" && doseMgKg > 10)
+        alerts.push("Pédiatrie: dose mg/kg élevée, vérifier la dose maximale autorisée.");
     }
     if (mode === "regle3") {
       if (voulu < 0) alerts.push("Dose voulue négative non autorisée.");
@@ -93,6 +209,8 @@ function DoseCalculator() {
       alerts.push("Grossesse déclarée: vérifier les contre-indications spécifiques.");
     if (poidsRef !== "reel")
       alerts.push("Poids de référence non réel: valider la formule de dose choisie.");
+    if (service === "grandsBrules")
+      alerts.push("Grands brûlés: réévaluer fréquemment les besoins hydriques.");
 
     return alerts;
   }, [
@@ -109,6 +227,7 @@ function DoseCalculator() {
     renal,
     grossesse,
     poidsRef,
+    service,
   ]);
 
   const hardStop = useMemo(() => {
@@ -117,7 +236,17 @@ function DoseCalculator() {
     if (mode === "dilution")
       return contenuAmpoule <= 0 || volumeAmpoule <= 0 || doseSouhaitee < 0;
     return false;
-  }, [mode, poids, doseMgKg, concentration, voulu, dispo, contenuAmpoule, volumeAmpoule, doseSouhaitee]);
+  }, [
+    mode,
+    poids,
+    doseMgKg,
+    concentration,
+    voulu,
+    dispo,
+    contenuAmpoule,
+    volumeAmpoule,
+    doseSouhaitee,
+  ]);
 
   const res = useMemo(() => {
     if (hardStop) {
@@ -129,7 +258,10 @@ function DoseCalculator() {
     if (mode === "mgkg") {
       const doseTotaleMg = Number(poids) * Number(doseMgKg);
       const ml = safeDiv(doseTotaleMg, Number(concentration));
-      return { text: `${round(doseTotaleMg)} mg au total → ${round(ml)} mL à prélever.`, tone: "success" as const };
+      return {
+        text: `${round(doseTotaleMg)} mg au total → ${round(ml)} mL à prélever.`,
+        tone: "success" as const,
+      };
     }
     if (mode === "regle3") {
       const ml = safeDiv(Number(voulu), Number(dispo));
@@ -143,10 +275,35 @@ function DoseCalculator() {
       };
     }
     return { text: "", tone: "info" as const };
-  }, [mode, poids, doseMgKg, concentration, voulu, dispo, contenuAmpoule, volumeAmpoule, doseSouhaitee, hardStop]);
+  }, [
+    mode,
+    poids,
+    doseMgKg,
+    concentration,
+    voulu,
+    dispo,
+    contenuAmpoule,
+    volumeAmpoule,
+    doseSouhaitee,
+    hardStop,
+  ]);
 
   return (
     <Card title="Calcul de dose" subtitle="Règle de trois, mg/kg, dilution">
+      <div className="mb-3 rounded-xl border border-border bg-surface p-3">
+        <div className="text-xs font-medium text-muted mb-2">Preset appliqué au calcul</div>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="text-xs text-muted">{selectedPreset.label}</div>
+          <button
+            type="button"
+            onClick={applyServicePreset}
+            className="px-3 py-1.5 rounded-xl border border-border bg-card text-xs hover:bg-surface"
+          >
+            Appliquer les concentrations standards
+          </button>
+        </div>
+      </div>
+
       <div className="mb-3 rounded-xl border border-border bg-surface p-3">
         <div className="text-xs font-medium text-muted mb-2">Contexte patient (sécurité)</div>
         <div className="grid sm:grid-cols-2 gap-2">
@@ -348,7 +505,10 @@ function DripRate() {
   const [minutes, setMinutes] = useState<number>(30);
   const [df, setDf] = useState<number>(20);
 
-  const gtt = useMemo(() => safeDiv(Number(volume) * Number(df), Number(minutes)), [volume, df, minutes]);
+  const gtt = useMemo(
+    () => safeDiv(Number(volume) * Number(df), Number(minutes)),
+    [volume, df, minutes]
+  );
 
   return (
     <Card title="Gouttes par minute" subtitle="(Volume × facteur de chute) ÷ temps">
@@ -375,7 +535,202 @@ function DripRate() {
   );
 }
 
-function MiniField({ label, value, onChange, suffix }: { label: string; value: number; onChange: (v: number) => void; suffix?: string }) {
+function ServiceTools({ service }: { service: ServiceId }) {
+  if (service === "urgences") return <EmergencyTools />;
+  if (service === "usi") return <ICUTools />;
+  if (service === "grandsBrules") return <BurnTools />;
+  if (service === "pediatrie") {
+    return (
+      <Card title="Pédiatrie — rappel sécurité" subtitle="Poids et doses max">
+        <div className="text-sm text-muted">
+          Toujours vérifier le poids actualisé du jour et les doses maximales pédiatriques de la molécule.
+        </div>
+      </Card>
+    );
+  }
+  return (
+    <Card title="Polyvalent — rappel pratique" subtitle="Outils généralistes">
+      <div className="text-sm text-muted">
+        Utilisez les calculateurs de dose, débit et gouttes/min selon protocole local.
+      </div>
+    </Card>
+  );
+}
+
+function EmergencyTools() {
+  const [poids, setPoids] = useState<number>(70);
+  const [hr, setHr] = useState<number>(110);
+  const [sbp, setSbp] = useState<number>(100);
+  const bolus = round(poids * 20);
+  const shockIndex = round(safeDiv(hr, sbp));
+
+  return (
+    <Card title="Urgences — outils rapides" subtitle="Bolus et shock index">
+      <Field
+        label="Poids patient"
+        value={poids}
+        onChange={(v) => setPoids(Number(v))}
+        suffix="kg"
+        min={0}
+      />
+      <Result tone="info">Bolus cristalloïde initial ≈ {bolus} mL (20 mL/kg)</Result>
+      <div className="grid sm:grid-cols-2 gap-3 mt-3">
+        <Field
+          label="Fréquence cardiaque"
+          value={hr}
+          onChange={(v) => setHr(Number(v))}
+          suffix="/min"
+          min={0}
+        />
+        <Field
+          label="PAS"
+          value={sbp}
+          onChange={(v) => setSbp(Number(v))}
+          suffix="mmHg"
+          min={0}
+        />
+      </div>
+      <Result tone={shockIndex >= 1 ? "warn" : "success"}>Shock index = {shockIndex}</Result>
+    </Card>
+  );
+}
+
+function ICUTools() {
+  const [dose, setDose] = useState<number>(0.1);
+  const [poids, setPoids] = useState<number>(70);
+  const [mgSeringue, setMgSeringue] = useState<number>(8);
+  const [volSeringue, setVolSeringue] = useState<number>(50);
+  const concentrationMcgMl = safeDiv(mgSeringue * 1000, volSeringue);
+  const mlh = round(safeDiv(dose * poids * 60, concentrationMcgMl));
+
+  return (
+    <Card title="USI — catécholamines" subtitle="Noradrénaline µg/kg/min → mL/h">
+      <div className="grid sm:grid-cols-2 gap-3">
+        <Field
+          label="Dose cible"
+          value={dose}
+          onChange={(v) => setDose(Number(v))}
+          suffix="µg/kg/min"
+          min={0}
+          step="0.01"
+        />
+        <Field
+          label="Poids patient"
+          value={poids}
+          onChange={(v) => setPoids(Number(v))}
+          suffix="kg"
+          min={0}
+        />
+        <Field
+          label="Noradrénaline dans seringue"
+          value={mgSeringue}
+          onChange={(v) => setMgSeringue(Number(v))}
+          suffix="mg"
+          min={0}
+        />
+        <Field
+          label="Volume seringue"
+          value={volSeringue}
+          onChange={(v) => setVolSeringue(Number(v))}
+          suffix="mL"
+          min={0}
+        />
+      </div>
+      <Result tone="info">Débit pousse-seringue ≈ {mlh} mL/h</Result>
+      <div className="text-xs text-muted mt-2">
+        Toujours confirmer la concentration préparée à 2 IDE.
+      </div>
+    </Card>
+  );
+}
+
+function BurnTools() {
+  const [poids, setPoids] = useState<number>(70);
+  const [headPct, setHeadPct] = useState<number>(9);
+  const [armPct, setArmPct] = useState<number>(9);
+  const [trunkPct, setTrunkPct] = useState<number>(18);
+  const [legPct, setLegPct] = useState<number>(18);
+  const [perineumPct, setPerineumPct] = useState<number>(1);
+
+  const totalPct = Math.max(0, round(headPct + armPct + trunkPct + legPct + perineumPct));
+  const parkland24h = round(4 * poids * totalPct);
+  const first8h = round(parkland24h / 2);
+  const next16h = round(parkland24h / 2);
+
+  return (
+    <Card
+      title="Grands brûlés — surface et remplissage"
+      subtitle="Règle des 9 + formule de Parkland (adulte)"
+    >
+      <Field
+        label="Poids patient"
+        value={poids}
+        onChange={(v) => setPoids(Number(v))}
+        suffix="kg"
+        min={0}
+      />
+      <div className="grid sm:grid-cols-2 gap-3">
+        <Field
+          label="Tête/Cou brûlés"
+          value={headPct}
+          onChange={(v) => setHeadPct(Number(v))}
+          suffix="%"
+          min={0}
+        />
+        <Field
+          label="Membres sup. brûlés"
+          value={armPct}
+          onChange={(v) => setArmPct(Number(v))}
+          suffix="%"
+          min={0}
+        />
+        <Field
+          label="Tronc brûlé"
+          value={trunkPct}
+          onChange={(v) => setTrunkPct(Number(v))}
+          suffix="%"
+          min={0}
+        />
+        <Field
+          label="Membres inf. brûlés"
+          value={legPct}
+          onChange={(v) => setLegPct(Number(v))}
+          suffix="%"
+          min={0}
+        />
+        <Field
+          label="Périnée brûlé"
+          value={perineumPct}
+          onChange={(v) => setPerineumPct(Number(v))}
+          suffix="%"
+          min={0}
+        />
+      </div>
+      <Result tone={totalPct > 100 ? "danger" : "info"}>
+        Surface brûlée estimée: {totalPct}% TBSA
+      </Result>
+      <Result tone="warn">
+        Parkland 24h: {parkland24h} mL (Ringer lactate) — 8 premières heures: {first8h} mL,
+        puis 16h: {next16h} mL.
+      </Result>
+      <div className="text-xs text-muted mt-2">
+        Repère adulte: ajuster selon diurèse, lactate et protocole local.
+      </div>
+    </Card>
+  );
+}
+
+function MiniField({
+  label,
+  value,
+  onChange,
+  suffix,
+}: {
+  label: string;
+  value: number;
+  onChange: (v: number) => void;
+  suffix?: string;
+}) {
   return (
     <label className="block">
       <div className="text-[11px] text-muted">{label}</div>
