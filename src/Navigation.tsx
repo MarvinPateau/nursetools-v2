@@ -44,7 +44,7 @@ export function Header({
         <h1 className="text-xl sm:text-2xl font-semibold tracking-tight font-display">
           <span className="inline-flex items-center gap-2">
             <span className="inline-block h-6 w-6 rounded-xl bg-primary" aria-hidden />
-            <span>Outils de Chloé</span>
+            <span>NurseTools</span>
           </span>
         </h1>
         <div className="flex items-center gap-2">
