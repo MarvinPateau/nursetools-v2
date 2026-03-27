@@ -51,6 +51,10 @@ export function Field({
   placeholder,
 }: FieldProps) {
   const id = React.useId();
+  const normalizedValue =
+    type === 'number' && typeof value === 'number' && Number.isNaN(value)
+      ? ''
+      : value;
   return (
     <label className="block mb-3" htmlFor={id}>
       <div className="text-sm text-muted mb-1">{label}</div>
@@ -60,7 +64,7 @@ export function Field({
           className="w-full rounded-md border border-border bg-surface px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-ring"
           type={type}
           inputMode={type === 'number' ? 'decimal' : undefined}
-          value={value}
+          value={normalizedValue}
           min={min}
           max={max}
           placeholder={placeholder}

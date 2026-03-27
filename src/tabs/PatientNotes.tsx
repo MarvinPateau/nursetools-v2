@@ -28,11 +28,12 @@ export function AProposTab() {
     <section className="mt-6 space-y-6">
       <Card
         title="À propos"
-        subtitle="Conçu pour Chloé — usage d’aide uniquement"
+        subtitle="Outils d’aide au calcul pour la pratique infirmière"
       >
         <p className="text-sm text-muted">
           Toujours vérifier selon le protocole local et réaliser un double
-          contrôle pour les calculs. Créé avec ❤️ pour Chloé.
+          contrôle pour les calculs. Cette application ne remplace pas un avis
+          médical.
         </p>
       </Card>
     </section>
@@ -160,6 +161,14 @@ function NoteBlock() {
     setInput('');
   };
 
+  const removeNote = (index: number) => {
+    saveNotes(notes.filter((_, i) => i !== index));
+  };
+
+  const clearNotes = () => {
+    saveNotes([]);
+  };
+
   return (
     <Card
       title="Bloc-notes rapide"
@@ -178,16 +187,35 @@ function NoteBlock() {
         }}
       />
       {notes.length > 0 && (
-        <ul className="mt-3 space-y-2">
-          {notes.map((n, i) => (
-            <li
-              key={i}
-              className="rounded-lg border border-border bg-card/70 px-3 py-2 text-sm"
+        <>
+          <div className="mt-3 flex justify-end">
+            <button
+              type="button"
+              className="rounded-lg border border-border px-3 py-1.5 text-xs text-muted hover:bg-surface"
+              onClick={clearNotes}
             >
-              {n}
-            </li>
-          ))}
-        </ul>
+              Tout effacer
+            </button>
+          </div>
+          <ul className="mt-2 space-y-2">
+            {notes.map((n, i) => (
+              <li
+                key={`${n}-${i}`}
+                className="rounded-lg border border-border bg-card/70 px-3 py-2 text-sm flex items-start justify-between gap-3"
+              >
+                <span>{n}</span>
+                <button
+                  type="button"
+                  aria-label={`Supprimer la note ${i + 1}`}
+                  className="shrink-0 rounded-md border border-border px-2 py-1 text-xs text-muted hover:bg-surface"
+                  onClick={() => removeNote(i)}
+                >
+                  Supprimer
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
       <div className="text-[11px] text-muted mt-2">
         Astuce: <em>Ctrl/Cmd + P</em> pour imprimer la page / exporter en PDF.

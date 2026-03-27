@@ -66,7 +66,7 @@ export default function NurseToolkitApp() {
                 ⚠️ Cet outil aide uniquement aux calculs infirmiers — il ne
                 remplace pas l'avis médical.
               </div>
-              <div>© {new Date().getFullYear()} — Fait avec ❤️ pour Chloé</div>
+              <div>© {new Date().getFullYear()} — NurseTools</div>
             </div>
           </div>
         </footer>

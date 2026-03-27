@@ -14,6 +14,22 @@ type Props = {
   showSprout?: boolean;
 };
 
+type OpenMeteoCurrent = {
+  temperature_2m: number;
+  weather_code: number;
+};
+
+function weatherCodeToFrenchLabel(code: number) {
+  if (code === 0) return 'Ensoleillé';
+  if ([1, 2, 3].includes(code)) return 'Nuageux';
+  if ([45, 48].includes(code)) return 'Brouillard';
+  if ([51, 53, 55, 56, 57].includes(code)) return 'Bruine';
+  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return 'Pluie';
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return 'Neige';
+  if ([95, 96, 99].includes(code)) return 'Orage';
+  return 'Conditions variables';
+}
+
 function iconFor(condition: string) {
   const c = condition.toLowerCase();
   if (c.includes('pluie'))
@@ -64,7 +80,7 @@ function iconFor(condition: string) {
   );
 }
 
-export function WeatherWidget({ city = 'Solliès-Toucas', onWeather, showSprout }: Props) {
+export function WeatherWidget({ city = 'Paris', onWeather, showSprout }: Props) {
   const [data, setData] = useState<Weather | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -73,22 +89,38 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather, showSprout 
   useEffect(() => {
     async function load() {
       const key = import.meta.env.VITE_WEATHER_API_KEY;
-      if (!key) {
-        setError('Clé API manquante');
-        onWeather?.(null);
-        setLoading(false);
-        return;
-      }
       try {
-        const url = `https://api.weatherapi.com/v1/current.json?key=${key}&q=${encodeURIComponent(city)}&lang=fr&aqi=no`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Erreur réseau');
-        const json = await res.json();
-        const w: Weather = {
-          location: json.location.name,
-          temp: json.current.temp_c,
-          condition: json.current.condition.text,
-        };
+        let w: Weather;
+        if (key) {
+          const url = `https://api.weatherapi.com/v1/current.json?key=${key}&q=${encodeURIComponent(city)}&lang=fr&aqi=no`;
+          const res = await fetch(url);
+          if (!res.ok) throw new Error('Erreur réseau');
+          const json = await res.json();
+          w = {
+            location: json.location.name,
+            temp: json.current.temp_c,
+            condition: json.current.condition.text,
+          };
+        } else {
+          const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=fr&format=json`;
+          const geoRes = await fetch(geoUrl);
+          if (!geoRes.ok) throw new Error('Géocodage indisponible');
+          const geoJson = await geoRes.json();
+          const first = geoJson?.results?.[0];
+          if (!first) throw new Error('Ville introuvable');
+
+          const meteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${first.latitude}&longitude=${first.longitude}&current=temperature_2m,weather_code`;
+          const meteoRes = await fetch(meteoUrl);
+          if (!meteoRes.ok) throw new Error('Météo indisponible');
+          const meteoJson = await meteoRes.json();
+          const current = meteoJson?.current as OpenMeteoCurrent | undefined;
+          if (!current) throw new Error('Données météo invalides');
+          w = {
+            location: first.name,
+            temp: current.temperature_2m,
+            condition: weatherCodeToFrenchLabel(current.weather_code),
+          };
+        }
         setData(w);
         onWeather?.(w);
         setError(null);
@@ -136,6 +168,7 @@ export function WeatherWidget({ city = 'Solliès-Toucas', onWeather, showSprout 
           <div className="text-2xl font-bold text-primary">
             {Math.round(data.temp)}°C
           </div>
+          <div className="text-sm text-muted">{data.location}</div>
           <div className="text-sm text-muted">{data.condition}</div>
           <div className="text-xs text-muted/80">{message}</div>
         </div>
