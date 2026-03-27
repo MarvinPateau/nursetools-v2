@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Header, BottomNav } from './Navigation';
-import { Greeting, Tabs } from './Home';
+import { Greeting, Tabs, ColorGuide } from './Home';
 import { TabContent } from './TabsRouter';
 import { fadeInUp } from './ui/motion/presets';
 import { transition } from './ui/motion/transition';
@@ -28,6 +28,13 @@ export default function NurseToolkitApp() {
   });
 
   const prefersReduced = useReducedMotion();
+  const domainFrameClass: Record<TabKey, string> = {
+    calculs: 'domain-frame-calculs',
+    gaz: 'domain-frame-gaz',
+    patient: 'domain-frame-patient',
+    notes: 'domain-frame-notes',
+    apropos: 'domain-frame-apropos',
+  };
 
   useEffect(() => {
     try {
@@ -54,6 +61,7 @@ export default function NurseToolkitApp() {
         >
           <Greeting weather={weather} />
           <Tabs active={tab} onChange={setTab} />
+          <ColorGuide active={tab} />
           <WeatherWidget onWeather={setWeather} />
           <AnimatePresence mode="wait">
             <motion.div
@@ -65,7 +73,7 @@ export default function NurseToolkitApp() {
               variants={prefersReduced ? undefined : fadeInUp}
               transition={transition}
             >
-              <div className="rounded-2xl bg-card shadow-e3 p-6 border border-border">
+              <div className={`rounded-2xl bg-card shadow-e3 p-6 border border-border ${domainFrameClass[tab]}`}>
                 <TabContent active={tab} />
               </div>
             </motion.div>
