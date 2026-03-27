@@ -42,38 +42,38 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
 
   const dynamicTitle = useMemo(() => {
     if (cond.includes('tempête'))
-      return '🌪 Tempête dehors, sérénité dedans grâce à toi, ma héroïne.';
+      return '🌪 Tempête dehors, gardez le cap avec des repères fiables.';
     if (cond.includes('grêle'))
-      return '🌨 Les grêlons tapent, mais tu gardes la réa au chaud.';
+      return '🌨 Conditions difficiles : priorisez la sécurité des soins.';
     if (cond.includes('vent'))
-      return '💨 Vent fou, ton calme en réa ne vacille jamais, ma Chloé.';
+      return '💨 Vent soutenu : restez méthodique et précis.';
     if (cond.includes('bruine'))
-      return '🌦 Bruine légère, parfait pour un câlin avant la garde.';
+      return '🌦 Bruine légère : journée idéale pour une garde sereine.';
     if (cond.includes('pluie'))
-      return '🌧 Un peu de pluie dehors, mais du soleil dans ton cœur.';
+      return '🌧 Pluie dehors, rigueur et clarté dedans.';
     if (cond.includes('neige'))
-      return '❄️ Temps parfait pour un chocolat chaud sous un plaid.';
+      return '❄️ Temps froid : anticipez l’organisation de la garde.';
     if (cond.includes('orage'))
-      return '⛈ Calme dans la tempête, Chloé.';
+      return '⛈ Restez calme et structuré dans la tempête.';
     if (cond.includes('brouillard'))
       return '🌫 Horizon flou, mission claire.';
     if (cond.includes('nuage'))
       return '🌤 Un temps doux pour adoucir la garde.';
     if (cond.includes('soleil') || cond.includes('ensoleillé'))
-      return '☀️ Un grand soleil pour éclairer ta journée, Chloé !';
+      return '☀️ Belle luminosité pour une journée productive.';
     if (temp !== undefined) {
       if (temp >= 35)
         return '🔥 Canicule en vue, pense à bien t’hydrater.';
       if (temp >= 30)
-        return '🥵 Grosse chaleur, j’ai glissé une bouteille fraîche dans ton sac.';
+        return '🥵 Grosse chaleur : hydratez-vous régulièrement.';
       if (temp >= 25)
         return '🌡 Il fait chaud, courage pour la garde.';
       if (temp >= 15)
-        return '🌼 Douce température, ton sourire rassure toute la réa.';
+        return '🌼 Douce température, conditions confortables.';
       if (temp >= 10)
-        return '🍂 Petit air frais, je t’ai laissé un pull dans le casier.';
+        return '🍂 Petit air frais, pensez à vous couvrir.';
       if (temp <= -5)
-        return '🧊 Froid mordant, tu restes la flamme des soins intensifs.';
+        return '🧊 Froid marqué, adaptez la prise en charge logistique.';
       if (temp <= 0)
         return '🥶 Il fait glacial, couvre-toi bien !';
       if (temp < 10)
@@ -82,9 +82,9 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
     if (h >= 21 || h < 6)
       return '🌙 Douce nuit, prends soin de toi.';
     if (h >= 6 && h < 9)
-      return '🌅 Bonjour ma star de la réa, ton café t’attend.';
+      return '🌅 Bonjour, bonne prise de poste.';
     if (h >= 18 && h < 21)
-      return '🌆 Fin de garde en vue, je t’attends avec un gros câlin.';
+      return '🌆 Fin de garde en vue, pensez à la relève.';
     return '🌤 Un temps doux pour adoucir la garde.';
   }, [cond, temp, h]);
 
