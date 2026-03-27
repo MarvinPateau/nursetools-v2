@@ -1,21 +1,69 @@
-// File: src/App.tsx
-// Rôle: point d'entrée visuel, gestion d'état d'onglet, layout général (design modernisé et épuré)
-
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Calculator, Home, Settings, Stethoscope } from 'lucide-react';
 import { Header, BottomNav } from './Navigation';
-import { Greeting, Tabs, ColorGuide } from './Home';
-import { TabContent } from './TabsRouter';
-import { fadeInUp } from './ui/motion/presets';
+import { CalculsTab } from './tabs/Calculs';
+import { GazometrieTab } from './tabs/Gazometrie';
+import { PatientTab, NotesTab } from './tabs/PatientNotes';
 import { transition } from './ui/motion/transition';
+import { fadeInUp } from './ui/motion/presets';
 import { useReducedMotion } from './ui/motion/ReducedMotion';
-import { WeatherWidget, type Weather } from './WeatherWidget';
 
+export type SectionKey = 'home' | 'calculs' | 'scores' | 'settings';
 export type TabKey = 'calculs' | 'gaz' | 'patient' | 'notes' | 'apropos';
 
+type ToolId = 'dose' | 'infusion' | 'gazo' | 'patient' | 'notes';
+
+type ToolMeta = {
+  id: ToolId;
+  title: string;
+  subtitle: string;
+  icon: ReactNode;
+  section: Exclude<SectionKey, 'home'>;
+};
+
+const TOOLS: ToolMeta[] = [
+  {
+    id: 'dose',
+    title: 'Calculs médicamenteux',
+    subtitle: 'Dose, dilution, débits, presets service',
+    icon: <Calculator className="h-7 w-7" />,
+    section: 'calculs',
+  },
+  {
+    id: 'infusion',
+    title: 'Perfusion / Surveillance',
+    subtitle: 'mL/h, gouttes/min, heure de fin',
+    icon: <Stethoscope className="h-7 w-7" />,
+    section: 'calculs',
+  },
+  {
+    id: 'gazo',
+    title: 'Gazométrie',
+    subtitle: 'ABG, P/F, AG, lactate',
+    icon: <Stethoscope className="h-7 w-7" />,
+    section: 'scores',
+  },
+  {
+    id: 'patient',
+    title: 'Repères patient',
+    subtitle: 'CrCl, IMC',
+    icon: <Home className="h-7 w-7" />,
+    section: 'scores',
+  },
+  {
+    id: 'notes',
+    title: 'Notes rapides',
+    subtitle: 'Mémo local de garde',
+    icon: <Settings className="h-7 w-7" />,
+    section: 'settings',
+  },
+];
+
 export default function NurseToolkitApp() {
-  const [tab, setTab] = useState<TabKey>('gaz');
-  const [weather, setWeather] = useState<Weather | null>(null);
+  const [section, setSection] = useState<SectionKey>('home');
+  const [activeTool, setActiveTool] = useState<ToolId | null>(null);
   const [dark, setDark] = useState<boolean>(() => {
     try {
       const saved = localStorage.getItem('theme');
@@ -28,13 +76,6 @@ export default function NurseToolkitApp() {
   });
 
   const prefersReduced = useReducedMotion();
-  const domainFrameClass: Record<TabKey, string> = {
-    calculs: 'domain-frame-calculs',
-    gaz: 'domain-frame-gaz',
-    patient: 'domain-frame-patient',
-    notes: 'domain-frame-notes',
-    apropos: 'domain-frame-apropos',
-  };
 
   useEffect(() => {
     try {
@@ -44,73 +85,88 @@ export default function NurseToolkitApp() {
     }
   }, [dark]);
 
+  const currentTitle = useMemo(() => {
+    if (activeTool) return TOOLS.find((t) => t.id === activeTool)?.title ?? 'Outil';
+    if (section === 'home') return 'Tableau de bord';
+    if (section === 'calculs') return 'Calculs';
+    if (section === 'scores') return 'Scores & bilans';
+    return 'Réglages';
+  }, [section, activeTool]);
+
+  const visibleTools = useMemo(() => {
+    if (section === 'home') return TOOLS;
+    if (section === 'settings') return TOOLS.filter((t) => t.section === 'settings');
+    return TOOLS.filter((t) => t.section === section);
+  }, [section]);
+
+  const renderTool = () => {
+    if (activeTool === 'dose' || activeTool === 'infusion') return <CalculsTab />;
+    if (activeTool === 'gazo') return <GazometrieTab />;
+    if (activeTool === 'patient') return <PatientTab />;
+    if (activeTool === 'notes') return <NotesTab />;
+    return null;
+  };
+
   return (
     <div className={dark ? 'dark' : ''}>
       <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 font-sans">
         <Header
+          title={currentTitle}
           dark={dark}
           onToggleDark={() => setDark((d) => !d)}
+          onBack={activeTool ? () => setActiveTool(null) : undefined}
         />
 
-        <motion.main
-          className="mx-auto w-full max-w-4xl px-4 pb-28 sm:pb-24"
-          initial="hidden"
-          animate="visible"
-          variants={prefersReduced ? undefined : fadeInUp}
-          transition={transition}
-        >
-          <Greeting weather={weather} />
-          <section className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
-            <div className="rounded-2xl border border-border bg-card px-3 py-2 text-left">
-              <div className="text-[11px] uppercase tracking-wider text-muted">Usage</div>
-              <div className="text-lg font-semibold tabular-nums">1 main</div>
-            </div>
-            <div className="rounded-2xl border border-border bg-card px-3 py-2 text-left">
-              <div className="text-[11px] uppercase tracking-wider text-muted">Contexte</div>
-              <div className="text-lg font-semibold tabular-nums">Urgence</div>
-            </div>
-            <div className="rounded-2xl border border-border bg-card px-3 py-2 text-left">
-              <div className="text-[11px] uppercase tracking-wider text-muted">Priorité</div>
-              <div className="text-lg font-semibold tabular-nums">Lisibilité</div>
-            </div>
-            <div className="rounded-2xl border border-border bg-card px-3 py-2 text-left">
-              <div className="text-[11px] uppercase tracking-wider text-muted">Contrôle</div>
-              <div className="text-lg font-semibold tabular-nums">Double-check</div>
-            </div>
-          </section>
-          <Tabs active={tab} onChange={setTab} />
-          <ColorGuide active={tab} />
-          <WeatherWidget onWeather={setWeather} />
+        <main className="mx-auto w-full max-w-4xl px-4 pb-28 pt-4 sm:pt-6">
           <AnimatePresence mode="wait">
             <motion.div
-              key={tab}
-              className="mt-6"
+              key={activeTool ?? section}
               initial="hidden"
               animate="visible"
               exit="hidden"
               variants={prefersReduced ? undefined : fadeInUp}
               transition={transition}
             >
-              <div className={`rounded-3xl bg-card shadow-e3 p-5 sm:p-6 border border-border ${domainFrameClass[tab]}`}>
-                <TabContent active={tab} />
-              </div>
+              {activeTool ? (
+                <section className="rounded-3xl border border-border bg-card shadow-e4 p-4 sm:p-6">
+                  {renderTool()}
+                </section>
+              ) : (
+                <section>
+                  <p className="text-sm text-muted mb-4">
+                    Choisissez un outil en un geste. Interface optimisée pour usage rapide en situation de fatigue.
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {visibleTools.map((tool) => (
+                      <button
+                        key={tool.id}
+                        type="button"
+                        onClick={() => setActiveTool(tool.id)}
+                        className="text-left rounded-2xl border border-border bg-card p-4 shadow-e2 hover:shadow-e4 transition focus:outline-none focus:ring-2 focus:ring-ring"
+                      >
+                        <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-surface text-primary">
+                          {tool.icon}
+                        </div>
+                        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 leading-tight">
+                          {tool.title}
+                        </h3>
+                        <p className="mt-1 text-xs text-muted leading-snug">{tool.subtitle}</p>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              )}
             </motion.div>
           </AnimatePresence>
-        </motion.main>
+        </main>
 
-        <BottomNav active={tab} onChange={setTab} />
-
-        <footer className="mt-10 border-t border-border bg-surface/80 backdrop-blur-xl">
-          <div className="mx-auto w-full max-w-4xl px-4 py-6 text-sm text-muted">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-              <div>
-                ⚠️ Cet outil aide uniquement aux calculs infirmiers — il ne
-                remplace pas l’avis médical.
-              </div>
-              <div>© {new Date().getFullYear()} NurseTools</div>
-            </div>
-          </div>
-        </footer>
+        <BottomNav
+          active={section}
+          onChange={(next) => {
+            setSection(next);
+            setActiveTool(null);
+          }}
+        />
       </div>
     </div>
   );

@@ -3,8 +3,9 @@
 
 import { useMemo } from 'react';
 import type { ReactNode } from 'react';
-import type { TabKey } from './App';
 import { Activity, Calculator, Info, NotebookPen, UserRound } from 'lucide-react';
+
+type TabKey = 'calculs' | 'gaz' | 'patient' | 'notes' | 'apropos';
 
 type WeatherLite = { location: string; temp: number; condition: string } | null;
 
