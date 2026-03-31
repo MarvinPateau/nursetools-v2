@@ -2,7 +2,10 @@
 // Header d’accueil sobre + barre d’onglets (utilise la météo passée par App)
 
 import { useMemo } from 'react';
-import type { TabKey } from './App';
+import type { ReactNode } from 'react';
+import { Activity, Calculator, Info, NotebookPen, UserRound } from 'lucide-react';
+
+type TabKey = 'calculs' | 'gaz' | 'patient' | 'notes' | 'apropos';
 
 type WeatherLite = { location: string; temp: number; condition: string } | null;
 
@@ -42,50 +45,45 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
 
   const dynamicTitle = useMemo(() => {
     if (cond.includes('tempête'))
-      return '🌪 Tempête dehors, sérénité dedans grâce à toi, ma héroïne.';
+      return '🌪 Vigilance météo : adaptez les transferts et déplacements.';
     if (cond.includes('grêle'))
-      return '🌨 Les grêlons tapent, mais tu gardes la réa au chaud.';
+      return '🌨 Conditions instables : anticipez les contraintes logistiques.';
     if (cond.includes('vent'))
-      return '💨 Vent fou, ton calme en réa ne vacille jamais, ma Chloé.';
+      return '💨 Vent soutenu : privilégiez une organisation simple et robuste.';
     if (cond.includes('bruine'))
-      return '🌦 Bruine légère, parfait pour un câlin avant la garde.';
+      return '🌦 Conditions humides : vérifiez confort et sécurité des trajets.';
     if (cond.includes('pluie'))
-      return '🌧 Un peu de pluie dehors, mais du soleil dans ton cœur.';
+      return '🌧 Journée pluvieuse : gardez des repères clairs et rapides.';
     if (cond.includes('neige'))
-      return '❄️ Temps parfait pour un chocolat chaud sous un plaid.';
+      return '❄️ Conditions hivernales : sécurisez les priorités de la garde.';
     if (cond.includes('orage'))
-      return '⛈ Calme dans la tempête, Chloé.';
+      return '⛈ Contexte orageux : maintenez un workflow calmement structuré.';
     if (cond.includes('brouillard'))
-      return '🌫 Horizon flou, mission claire.';
+      return '🌫 Visibilité réduite : privilégiez la clarté des transmissions.';
     if (cond.includes('nuage'))
-      return '🌤 Un temps doux pour adoucir la garde.';
+      return '🌤 Journée calme : appuyez-vous sur des outils fiables.';
     if (cond.includes('soleil') || cond.includes('ensoleillé'))
-      return '☀️ Un grand soleil pour éclairer ta journée, Chloé !';
+      return '☀️ Bonne journée pour avancer efficacement.';
     if (temp !== undefined) {
       if (temp >= 35)
-        return '🔥 Canicule en vue, pense à bien t’hydrater.';
+        return '🔥 Forte chaleur : pensez hydratation et pauses régulières.';
       if (temp >= 30)
-        return '🥵 Grosse chaleur, j’ai glissé une bouteille fraîche dans ton sac.';
+        return '🥵 Chaleur marquée : adaptez le rythme et l’hydratation.';
       if (temp >= 25)
-        return '🌡 Il fait chaud, courage pour la garde.';
+        return '🌡 Température élevée : gardez un rythme soutenable.';
       if (temp >= 15)
-        return '🌼 Douce température, ton sourire rassure toute la réa.';
+        return '🌼 Conditions agréables pour une garde sereine.';
       if (temp >= 10)
-        return '🍂 Petit air frais, je t’ai laissé un pull dans le casier.';
-      if (temp <= -5)
-        return '🧊 Froid mordant, tu restes la flamme des soins intensifs.';
+        return '🍂 Air frais : pensez à vous couvrir entre deux déplacements.';
+      if (temp <= -5) return '🧊 Froid intense : restez bien protégé.';
       if (temp <= 0)
-        return '🥶 Il fait glacial, couvre-toi bien !';
-      if (temp < 10)
-        return '🧥 Temps frais, garde ton gilet à portée.';
+        return '🥶 Température négative : prudence et équipement adapté.';
+      if (temp < 10) return '🧥 Temps frais : restez bien couvert.';
     }
-    if (h >= 21 || h < 6)
-      return '🌙 Douce nuit, prends soin de toi.';
-    if (h >= 6 && h < 9)
-      return '🌅 Bonjour ma star de la réa, ton café t’attend.';
-    if (h >= 18 && h < 21)
-      return '🌆 Fin de garde en vue, je t’attends avec un gros câlin.';
-    return '🌤 Un temps doux pour adoucir la garde.';
+    if (h >= 21 || h < 6) return '🌙 Service de nuit : gardez des checks simples.';
+    if (h >= 6 && h < 9) return '🌅 Démarrage de journée : focus sur l’essentiel.';
+    if (h >= 18 && h < 21) return '🌆 Fin de journée : sécurisez les transmissions.';
+    return '🌤 Outils rapides pour les routines de soins.';
   }, [cond, temp, h]);
 
   const dateStr = now.toLocaleDateString('fr-FR', {
@@ -107,14 +105,14 @@ export function Greeting({ weather }: { weather: WeatherLite }) {
       </div>
 
       {/* Titre sobre avec gradient léger */}
-      <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold leading-tight font-display">
+      <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold leading-tight tracking-tight">
         <span className="bg-gradient-to-r from-moss via-primary to-mint bg-clip-text text-transparent">
           {dynamicTitle}
         </span>
       </h2>
 
       {/* Sous-texte concis */}
-      <p className="mt-2 text-muted">
+      <p className="mt-2 text-muted text-sm sm:text-base">
         Calculs rapides, repères utiles et outils patients.
         <span className="hidden sm:inline">
           {' '}
@@ -133,25 +131,25 @@ export function Tabs({
   active: TabKey;
   onChange: (t: TabKey) => void;
 }) {
-  const items: { id: TabKey; label: string; icon: string }[] = [
-    { id: 'calculs', icon: '💊', label: 'Calculs' },
-    { id: 'gaz', icon: '🩸', label: 'Gazométrie' },
-    { id: 'patient', icon: '🧪', label: 'Patient' },
-    { id: 'notes', icon: '🗒️', label: 'Notes' },
-    { id: 'apropos', icon: 'ℹ️', label: 'À propos' },
+  const items: { id: TabKey; label: string; icon: ReactNode; domainClass: string }[] = [
+    { id: 'calculs', icon: <Calculator className="h-4 w-4" />, label: 'Calculs', domainClass: 'domain-calculs' },
+    { id: 'gaz', icon: <Activity className="h-4 w-4" />, label: 'Gazométrie', domainClass: 'domain-gaz' },
+    { id: 'patient', icon: <UserRound className="h-4 w-4" />, label: 'Patient', domainClass: 'domain-patient' },
+    { id: 'notes', icon: <NotebookPen className="h-4 w-4" />, label: 'Notes', domainClass: 'domain-notes' },
+    { id: 'apropos', icon: <Info className="h-4 w-4" />, label: 'À propos', domainClass: 'domain-apropos' },
   ];
 
-  const cls = (is: boolean) =>
+  const cls = (is: boolean, domainClass: string) =>
     [
       'group rounded-2xl border transition shadow-sm focus:outline-none focus:ring-2 focus:ring-ring',
-      'flex items-center justify-center gap-2 px-3 py-2 text-sm',
+      'flex items-center justify-center gap-2 px-3 py-3 text-sm font-medium',
       is
-        ? 'bg-gradient-to-r from-primary to-mint text-primary-foreground border-transparent shadow-e2'
+        ? `${domainClass} text-slate-950 border-transparent shadow-e4`
         : 'bg-surface hover:bg-surface/80 text-muted border-border',
     ].join(' ');
 
   return (
-    <div className="mt-5 grid grid-cols-2 sm:grid-cols-5 gap-2" role="tablist">
+    <div className="mt-5 hidden sm:grid sm:grid-cols-5 gap-2" role="tablist">
       {items.map((t) => {
         const is = active === t.id;
         return (
@@ -160,12 +158,12 @@ export function Tabs({
             role="tab"
             aria-selected={is}
             onClick={() => onChange(t.id)}
-            className={cls(is)}
+            className={cls(is, t.domainClass)}
           >
             <span className="text-base leading-none" aria-hidden>
               {t.icon}
             </span>
-            <span className="font-medium">{t.label}</span>
+            <span>{t.label}</span>
             {is && (
               <span
                 className="ml-1 inline-flex h-1.5 w-1.5 rounded-full bg-white/80"
@@ -175,6 +173,31 @@ export function Tabs({
           </button>
         );
       })}
+    </div>
+  );
+}
+
+export function ColorGuide({ active }: { active: TabKey }) {
+  const items: { id: TabKey; label: string; cls: string }[] = [
+    { id: 'calculs', label: 'Calculs', cls: 'domain-calculs' },
+    { id: 'gaz', label: 'Gazométrie', cls: 'domain-gaz' },
+    { id: 'patient', label: 'Patient', cls: 'domain-patient' },
+    { id: 'notes', label: 'Notes', cls: 'domain-notes' },
+    { id: 'apropos', label: 'Info', cls: 'domain-apropos' },
+  ];
+
+  return (
+    <div className="mt-4 flex flex-wrap gap-2">
+      {items.map((i) => (
+        <span
+          key={i.id}
+          className={`rounded-full border px-3 py-1 text-[11px] font-medium tracking-wide ${
+            active === i.id ? `${i.cls} text-slate-950 border-transparent` : 'bg-surface border-border text-muted'
+          }`}
+        >
+          {i.label}
+        </span>
+      ))}
     </div>
   );
 }

@@ -217,7 +217,7 @@ export function Result({
   };
   const styles = toneMap[tone] || toneMap.success;
   return (
-    <div className={`rounded-2xl border px-4 py-3 text-sm ${styles}`}>
+    <div className={`mt-3 rounded-2xl border px-4 py-4 text-base font-semibold tracking-tight tabular-nums ${styles}`}>
       {children}
     </div>
   );
